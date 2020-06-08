@@ -1,0 +1,1 @@
+{"version":3,"file":"defaultcheckpointers.js","sourceRoot":"","sources":["../src/defaultcheckpointers.ts"],"names":[],"mappings":";AAAA;;;;GAIG;;AAGH,8DAA2D;AAE3D;;;;GAIG;AACH,MAAa,oBAAoB;IAChC;;;;;;OAMG;IACH,MAAM,CAAC,KAAK,CAAC,IAAI,CAAC,IAAY;QAC7B,MAAM,YAAY,GAAG,IAAI,mCAAgB,CAAC,IAAI,CAAC,CAAC;QAChD,MAAM,YAAY,CAAC,IAAI,EAAE,CAAC;QAC1B,OAAO,YAAY,CAAC;IACrB,CAAC;CACD;AAbD,oDAaC"}
