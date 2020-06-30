@@ -1,0 +1,8 @@
+{
+	"request-timeout" : 3000,
+	"tcert-batch-size" : 10,
+	"crypto-hash-algo": "SHA2",
+	"crypto-keysize": 256,
+	"crypto-hsm": false,
+	"connection-timeout": 3000
+}
