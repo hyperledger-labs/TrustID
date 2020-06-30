@@ -1,0 +1,1 @@
+{"version":3,"file":"timeouterror.js","sourceRoot":"","sources":["../../src/errors/timeouterror.ts"],"names":[],"mappings":";AAAA;;;;GAIG;;AAEH,+CAA6D;AAE7D;;;;GAIG;AACH,MAAa,YAAa,SAAQ,yBAAW;IAC5C,YAAY,IAA+B;QAC1C,KAAK,CAAC,IAAI,CAAC,CAAC;QACZ,IAAI,CAAC,IAAI,GAAG,YAAY,CAAC,IAAI,CAAC;IAC/B,CAAC;CACD;AALD,oCAKC"}
