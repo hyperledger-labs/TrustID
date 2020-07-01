@@ -31,8 +31,17 @@ func (cc *Chaincode) invoke(stub shim.ChaincodeStubInterface, did string, args i
 	interact := make(map[string]interface{})
 	interact = args.(map[string]interface{})
 
+	if interact["did"] == nil {
+		log.Errorf("[%s][invoke]*** Error calling service, no service DID Specified")
+		return "", errors.New("Error calling service, no service DID Specified")
+	}
+
 	log.Debugf("[%s][invoke] Check access to interact for did: %s  and service: %s", proxyGateway, did, interact["did"].(string))
-	service, err := cc.getServiceRegistry(stub, did)
+	service, err := cc.getServiceRegistry(stub, interact["did"].(string))
+	if err != nil {
+		log.Errorf("[%s][invoke]*** Error calling service: ", err.Error())
+		return "", err
+	}
 	ccName := service.Name
 	checkAccess := service.Access[interact["did"].(string)]
 	channel := service.Channel
@@ -42,6 +51,7 @@ func (cc *Chaincode) invoke(stub shim.ChaincodeStubInterface, did string, args i
 		log.Errorf("[%s][invoke]*** Error calling service, problem getting service", err.Error())
 		return "", err
 	}
+	// TODO: Here is where the access logic should be implemented.
 	if checkAccess < 4 {
 		log.Debugf("[%s][invoke] Did: %s has access to service %s, invoking cc", proxyGateway, did, interact["did"].(string))
 		log.Debugf("[%s][invoke] Interact for chaincode %s args are  %v", proxyGateway, ccName, interact["args"])
@@ -53,9 +63,8 @@ func (cc *Chaincode) invoke(stub shim.ChaincodeStubInterface, did string, args i
 		argBytes := toChaincodeArgs(s...)
 		response := stub.InvokeChaincode(ccName, argBytes, channel)
 		if response.Status != shim.OK {
-			fmt.Printf("%v%", string(response.Payload))
-			log.Debugf("[%s][invoke] Error invoking chaincode %s", proxyGateway, string(response.Payload))
-			return "", errors.New(string(response.Payload))
+			log.Debugf("[%s][invoke] Error invoking chaincode %s", proxyGateway, response.Message)
+			return "", errors.New(response.Message)
 		}
 		log.Debugf("[%s][invoke] Invoke OK, returning result", proxyGateway)
 		log.Infof("%v", response.Payload)

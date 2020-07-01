@@ -10,6 +10,7 @@ package main
 import (
 	log "coren-identitycc/src/chaincode/log"
 	"encoding/json"
+	"os"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	sc "github.com/hyperledger/fabric-protos-go/peer"
@@ -42,6 +43,7 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) sc.Response {
 
 // Invoke is called as a result of an application request to run the chaincode.
 func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) sc.Response {
+	log.Init("DEBUG")
 	fcn, params := stub.GetFunctionAndParameters()
 	var err error
 	var result string
@@ -58,8 +60,25 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) sc.Response {
 }
 
 func main() {
-	err := shim.Start(new(Chaincode))
-	if err != nil {
-		panic(err)
+
+	server := &shim.ChaincodeServer{
+		CCID:    os.Getenv("CHAINCODE_CCID"),
+		Address: os.Getenv("CHAINCODE_ADDRESS"),
+		CC:      new(Chaincode),
+		TLSProps: shim.TLSProperties{
+			Disabled: true,
+		},
 	}
+
+	// Start the chaincode external server
+	err := server.Start()
+
+	if err != nil {
+		log.Errorf("Error starting coren-tokenscc chaincode: %s", err)
+	}
+
+	// err := shim.Start(new(Chaincode))
+	// if err != nil {
+	// 	panic(err)
+	// }
 }

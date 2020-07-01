@@ -146,7 +146,7 @@ export class TrustIdHf extends TrustID {
 	}
 
 	/** Registers new service in the platform */
-	public async createService(did: DID, serviceDID: string, name: string, isPublic: boolean = true): Promise<object> {
+	public async createService(did: DID, serviceDID: string, name: string, isPublic: boolean = true, channel: string): Promise<object> {
 		const args = [
 			JSON.stringify({
 				did: did.id,
@@ -156,6 +156,7 @@ export class TrustIdHf extends TrustID {
 						did: serviceDID,
 						name: name,
 						isPublic: isPublic,
+						channel: channel
 					},
 				}),
 			}),
