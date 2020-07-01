@@ -30,8 +30,8 @@ wal.setKeystore(ks)
 let ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
 let config = {
     stateStore: '/tmp/statestore',
-    caURL: 'https://ca.org1.example.com:7054',
-    caName: 'ca.org1.example.com',
+    caURL: 'https://ca.org1.telefonica.com:7054',
+    caName: 'ca.org1.telefonica.com',
     caAdmin: 'adminCA',
     caPassword: 'adminpw',
     tlsOptions: {
@@ -44,7 +44,7 @@ let config = {
     ccp: ccp,
     chaincodeName: "identitycc",
     fcn: "proxy",
-    channel: "examplechannel"
+    channel: "telefonicachannel"
 }
 
 const trustID = new TrustIdHf(config);
