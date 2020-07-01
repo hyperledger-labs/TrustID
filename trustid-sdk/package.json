@@ -15,14 +15,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/telefonicablockchain/trustid.git"
+        "url": "git+https://github.com/telefonica-tid/coren-id-sdk.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/telefonicablockchain/trustid/issues"
+        "url": "https://github.com/telefonica-tid/coren-id-sdk/issues"
     },
-    "homepage": "https://github.com/telefonicablockchain/trustid/trustid-sdk#readme",
+    "homepage": "https://github.com/telefonica-tid/coren-id-sdk#readme",
     "dependencies": {
         "@types/mongoose": "^5.7.14",
         "@types/node": "^13.7.1",
