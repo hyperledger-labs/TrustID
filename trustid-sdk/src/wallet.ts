@@ -22,6 +22,7 @@ export class DID {
 	public access: number;
 	private privkey: string;
 	private unlockedKey: any;
+	private unlockTimestamp : any;
 
 	// TODO: Default parameters for now:
 	// Default: 2048 for RSA, 'P-256' for EC, 'Ed25519' for OKP and 256 for oct.
@@ -43,7 +44,7 @@ export class DID {
 		this.privkey = "";
 		this.pubkey = "";
 		this.unlockedKey = null;
-
+		this.unlockTimestamp = 0;
 	}
 
 	// TODO: Can we do this more efficiently?
@@ -72,8 +73,9 @@ export class DID {
 		}
 	}
 
-	public async unlockAccount(passphrase: string = ""): Promise<void> {
+	public async unlockAccount(passphrase: string = "", timeout: number = 30): Promise<void> {
 		try {
+			this.unlockTimestamp = Date.now() + timeout*1000
 			const pem = crypto.AES.decrypt(this.privkey, passphrase).toString(crypto.enc.Utf8)
 			this.unlockedKey = await JWK.asKey(
 				pem,
@@ -113,6 +115,11 @@ export class DID {
 
 	/** sign Generates a JWS from a payload using an id from the wallet */
 	public async sign(payload: object): Promise<string> {
+
+		if (this.unlockTimestamp < Date.now()) {
+			this.unlockedKey = null;
+		}
+
 		if (!this.unlockedKey) {
 			throw Error("You must unlock the account before signing the message.");
 		}

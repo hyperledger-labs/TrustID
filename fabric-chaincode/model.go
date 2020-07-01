@@ -69,8 +69,8 @@ const (
 	ERRORGetState        = `Failed to get data from the ledger. `
 	ERRORDelState        = `Failed to delete data from the ledger. `
 	ERRORChaincodeCall   = `Error calling chaincode`
-	IDGATEWAY            = `IDGateway`
-	IDREGISTRY           = `IDRegistry`
-	ServiceGATEWAY       = `IDGateway`
-	ServiceREGISTRY      = `IDRegistry`
+	IDGATEWAY            = `ID Gateway`
+	IDREGISTRY           = `ID Registry`
+	ServiceGATEWAY       = `ID Service Gateway`
+	ServiceREGISTRY      = `ID Service Registry`
 )

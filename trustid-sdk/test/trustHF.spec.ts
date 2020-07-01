@@ -276,7 +276,7 @@ describe("TrustHF - Test", async() => {
 		it("Create Service Success", async () => {
 			try {
 				const trustID = new TrustIdHf(config);
-				const result = await trustID.createService(identity, "id", "name");
+				const result = await trustID.createService(identity, "id", "name", true, "channel");
 				expect(result).to.equal("OK");
 			} catch (err) {
 				console.log(err);
@@ -285,7 +285,7 @@ describe("TrustHF - Test", async() => {
 		it("Create Service Fail", async () => {
 			try {
                 const trustID = new TrustIdHf(config);
-				const result = await trustID.createService(identity, "id", "name");
+				const result = await trustID.createService(identity, "id", "name", true, "channel");
 			} catch (err) {
 				expect(err.message).to.equal("Error calling contract");
 			}

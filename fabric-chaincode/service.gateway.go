@@ -20,8 +20,9 @@ func (cc *Chaincode) createServiceIdentity(stub shim.ChaincodeStubInterface, did
 	service = args.(map[string]interface{})
 
 	log.Debugf("[%s][createServiceIdentity] Calling to registry", ServiceGATEWAY)
+	log.Debugf("[%s][createServiceIdentity] ****The service store is %v", ServiceGATEWAY, args)
 
-	serviceStore := Service{Name: service["name"].(string), Controller: did, Public: service["isPublic"].(bool)}
+	serviceStore := Service{Name: service["name"].(string), Controller: did, Public: service["isPublic"].(bool), Channel: service["channel"].(string)}
 
 	res, err := cc.createServiceRegistry(stub, service["did"].(string), serviceStore)
 	if err != nil {
