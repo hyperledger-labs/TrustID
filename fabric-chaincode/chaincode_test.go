@@ -31,13 +31,9 @@ func TestIdenity(t *testing.T) {
 		CreateUnverifiedIdentity(t, stub, invokeReq)
 	})
 	t.Run("GetIdentity", func(t *testing.T) {
-		fmt.Printf("FALLA???")
-
 		verPayload := "eyJhbGdvcml0aG0iOiJQUzI1NiIsImFsZyI6IlBTMjU2In0.eyJmdW5jdGlvbiI6ImdldElkZW50aXR5IiwicGFyYW1zIjp7ImRpZCI6ImRpZDp2dG46dHJ1c3Rvczp0ZWxlZm9uaWNhOjIifX0.Zs1qPx3f6pgeoYOJCzFo51MeBGlEXYPtPMTxVI-ACeGJbA6hu8iBz_wCV-dVlvkvFRyKavhuOrxeh9Qo1PlQqhxPdDtiPN1CjqGrzYSFQZElTJUAwU2c9Qckui440z9riwLcxF5XnSOurNelZ1Z6-CLr5WZ_DB80K4fcf6ngX00450oSZgMIvuveuQJtFyzmIK91arMCy-bp9aUj8cYb8b7hGn0ahk2u7l-bUUSvTzxtdhjilApKvGy6YGnNxZ6-S321FntudCgvOOKfzVMPVeE7138F3xNmMWcGoeqbX315_lKjA15P3t0naSXUWkQejPFhac5YivJMjARhDM_THg"
 		invokeReq := Request{Did: "did:vtn:trustos:telefonica:2", Payload: verPayload}
 		GetUnverifiedIdentity(t, stub, invokeReq)
-		fmt.Printf("FALLA???")
-
 	})
 	t.Run("Verify Idenitity", func(t *testing.T) {
 		verPayload := "eyJhbGdvcml0aG0iOiJQUzI1NiIsImFsZyI6IlBTMjU2In0.eyJmdW5jdGlvbiI6InZlcmlmeUlkZW50aXR5IiwicGFyYW1zIjp7ImRpZCI6ImRpZDp2dG46dHJ1c3Rvczp0ZWxlZm9uaWNhOjIifX0.JfKl8qeO1nTPQaPS00Td3ksOtQBhzHQgaqmX2Ojz5Mvu45SiGT2KEOsR8SZheuHuFBPgdq7Mu8BRwjbUMmATIZugM-uZdmwZF0HPPMQB7GikW-EiTCOU_rwKCKAEgINLtanXsOEK75XJ_QPUewYe2Fwn7SVt-sDk9ufIJXIL2f5gw9Kjp3gNjGCAmc4bUSMNlUM7XENxo6oq6HuWzEOU9SnLLxIBMDO1fhD639q13xA4XDGW7QavaBcalFDBAvzhKjcmcDlh0c5vL66V168mAXWq0wx_Rja-Sgj8zkGTGgdzBuMVkY-DAvca2UQbGod38BVqMWMbsFM4SfpSFVCIYQ"
