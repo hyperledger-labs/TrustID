@@ -12,7 +12,9 @@ export  abstract class  TrustID {
     abstract configureDriver(): Promise<void>;
     abstract disconnectDriver(): Promise<void>;
 
-    abstract createIdentity(did: DID): Promise<object>;
+    abstract createIdentity(did: DID, controller: DID): Promise<object>;
+    abstract createSelfIdentity(did: DID): Promise<object>;
+
     abstract verifyIdentity(adminDID: DID, id:string): Promise<object>;
     abstract getIdentity(did: DID, id: string): Promise<object>;
     abstract revokeIdentity(adminDID: DID, id: string): Promise<object>; 

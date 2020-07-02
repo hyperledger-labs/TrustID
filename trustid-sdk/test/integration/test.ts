@@ -90,7 +90,7 @@ describe("Integration test", () => {
 
 			const didUnlock = await wal.getDID("default");
 			await didUnlock.unlockAccount("secret");
-			await wal.networks["hf"].createIdentity(await wal.getDID("default"));
+			await wal.networks["hf"].createSelfIdentity(await wal.getDID("default"));
 
 			console.log("Getting created key...");
 			await trustID.getIdentity(await wal.getDID("default"), await didUnlock.id);

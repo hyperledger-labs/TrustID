@@ -55,7 +55,7 @@ export class TrustIdHf extends TrustID {
 		await this.driver.disconnect();
 	}
 	/** createIdentity registers a new unverified identity */
-	public async createIdentity(did: DID): Promise<Object> {
+	public async createSelfIdentity(did: DID): Promise<Object> {
 		const args = [
 			JSON.stringify({
 				publicKey: did.pubkey,
@@ -76,7 +76,28 @@ export class TrustIdHf extends TrustID {
 		);
 		return res;
 	}
-
+	/** createIdentity registers a new unverified identity */
+	public async createIdentity(did: DID, controller: DID): Promise<Object> {
+		const args = [
+			JSON.stringify({
+				did: controller.id,
+				payload: await controller.sign({
+					function: "createIdentity",
+					params: {
+						did: did.id,
+						publicKey: did.pubkey,
+					},
+				}),
+			}),
+		];
+		let res: any = await this.driver.callContractTransaction(
+			this.config.chaincodeName,
+			this.config.fcn,
+			args,
+			this.config.channel
+		);
+		return res;
+	}
 	/** VerifyIdentity allow admins to verify user identityes */
 	public async verifyIdentity(adminDID: DID, id: string): Promise<object> {
 		const args = [
