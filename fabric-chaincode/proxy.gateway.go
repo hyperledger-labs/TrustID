@@ -59,6 +59,10 @@ func (cc *Chaincode) checkArgs(stub shim.ChaincodeStubInterface, args []string) 
 		result, err = cc.createServiceIdentity(stub, idReq.Did, params["params"])
 
 	}
+	if params["function"].(string) == "createIdentity" {
+		result, err = cc.createIdentity(stub, idReq.Did, params["params"])
+
+	}
 	if params["function"].(string) == "getServiceIdentity" {
 		result, err = cc.getServiceIdentity(stub, params["params"])
 
