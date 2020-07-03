@@ -23,6 +23,7 @@ func (cc *Chaincode) createServiceIdentity(stub shim.ChaincodeStubInterface, did
 	log.Debugf("[%s][createServiceIdentity] ****The service store is %v", ServiceGATEWAY, args)
 
 	serviceStore := Service{Name: service["name"].(string), Controller: did, Public: service["isPublic"].(bool), Channel: service["channel"].(string)}
+	serviceStore.updateAccess(service["access"].(AccessPolicy))
 
 	res, err := cc.createServiceRegistry(stub, service["did"].(string), serviceStore)
 	if err != nil {
@@ -40,10 +41,13 @@ func (cc *Chaincode) updateServiceAccess(stub shim.ChaincodeStubInterface, args 
 	service := make(map[string]interface{})
 	service = args.(map[string]interface{})
 
-	m := make(map[string]interface{}) // parse access to interact
-	m = service["access"].(map[string]interface{})
+	// m := make(map[string]interface{}) // parse access to interact
+	access := AccessPolicy{}
+	accessBt, _ := json.Marshal(service["access"])
+	json.Unmarshal(accessBt, access)
+	// m = service["access"].(AccessPolicy)
 
-	result, err := cc.updateRegistryAccess(stub, service["did"].(string), m["did"].(string), int(m["type"].(float64)))
+	result, err := cc.updateRegistryAccess(stub, service["did"].(string), access)
 	if err != nil {
 		log.Errorf("[%s][updateServiceAccess] Error updating registry access: %v", ServiceGATEWAY, err.Error())
 		log.Errorf("[%s][updateServiceAccess] Return error", ServiceGATEWAY)

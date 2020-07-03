@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 */
 import {Wallet} from "../../src/wallet";
-import {Access} from "../../src/network/trustInterface";
+import {AccessPolicy, PolicyType} from "../../src/network/trustInterface";
 import {expect} from "chai";
 
 import {TrustIdHf} from "../../src/network/trustHF";
@@ -86,7 +86,7 @@ describe("Integration test", () => {
 			wal.addNetwork("hf", trustID);
 			await wal.networks["hf"].configureDriver();
 
-			let access: Access = {did: "did:vtn:trustos:telefonica:0", type: 2};
+			let access: AccessPolicy = {policy: PolicyType.PublicPolicy, threshold: 0, Registry: {}};
 
 			const didUnlock = await wal.getDID("default");
 			await didUnlock.unlockAccount("secret");
@@ -95,7 +95,7 @@ describe("Integration test", () => {
 			console.log("Getting created key...");
 			await trustID.getIdentity(await wal.getDID("default"), await didUnlock.id);
 			const id = Date.now();
-			await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "chaincode", true, "telefonicachannel");
+			await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "chaincode", access, true, "telefonicachannel");
 			await trustID.updateService(await wal.getDID("default"), `vtn:trustos:service:${id}`, access, true);
 			const result = await trustID.invoke(
 				await wal.getDID("default"),
