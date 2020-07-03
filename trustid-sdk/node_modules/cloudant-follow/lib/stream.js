@@ -138,7 +138,7 @@ Changes.prototype.write_continuous = function(data) {
   var change;
   var buf = (self.buf || '') + data;
 
-  self.log.debug('write: ' + util.inspect({'data': data, 'buf': buf}));
+  self.log.debug('write: ' + util.inspect({ 'data': data, 'buf': buf }));
 
   // Buf could have 0, 1, or many JSON objects in it.
   while ((offset = buf.indexOf('\n')) >= 0) {

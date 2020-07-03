@@ -44,8 +44,9 @@ func (cc *Chaincode) getServiceRegistry(stub shim.ChaincodeStubInterface, didSer
 	log.Infof("[%s][getIDRegistry] Get Service for did %s", ServiceREGISTRY, didService)
 	idStored := Service{}
 	idBytes, err := stub.GetState(didService)
-	if idBytes == nil {
-		log.Errorf("[%s][createServiceRegistry] The service doesn't exist", ServiceREGISTRY)
+
+	if len(idBytes) == 0 {
+		log.Errorf("[%s][getIDRegistry] The service doesn't exist", ServiceREGISTRY)
 		return nil, errors.New("The service doesn't exist")
 	}
 	if err != nil {

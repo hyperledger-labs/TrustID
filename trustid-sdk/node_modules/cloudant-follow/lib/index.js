@@ -50,7 +50,7 @@ function getLogger(name) {
     'warn': debug('follow:' + name + ':warn'),
     'error': debug('follow:' + name + ':error'),
     'fatal': debug('follow:' + name + ':fatal'),
-    'level': {'level': 0, 'levelStr': 'noop'},
+    'level': { 'level': 0, 'levelStr': 'noop' },
     'setLevel': noop
   };
 }
