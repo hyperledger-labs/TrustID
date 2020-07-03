@@ -10,7 +10,6 @@ package main
 import (
 	log "coren-identitycc/src/chaincode/log"
 	"encoding/json"
-	"os"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	sc "github.com/hyperledger/fabric-protos-go/peer"
@@ -34,7 +33,7 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) sc.Response {
 	if err != nil {
 		log.Errorf("[IdentityGateway][CreateIdentity] Error parsing: %v", err.Error())
 	}
-	identityStore := Identity{PublicKey: idReq.PublicKey, Controller: idReq.Controller, Access: 0}
+	identityStore := Identity{PublicKey: idReq.PublicKey, Controller: idReq.Controller, Access: 4}
 	_, err = cc.createIDRegistry(stub, idReq.Did, identityStore)
 	log.Infof("[IdentityCC][Init] Chaincode initialized")
 
@@ -61,24 +60,24 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) sc.Response {
 
 func main() {
 
-	server := &shim.ChaincodeServer{
-		CCID:    os.Getenv("CHAINCODE_CCID"),
-		Address: os.Getenv("CHAINCODE_ADDRESS"),
-		CC:      new(Chaincode),
-		TLSProps: shim.TLSProperties{
-			Disabled: true,
-		},
-	}
-
-	// Start the chaincode external server
-	err := server.Start()
-
-	if err != nil {
-		log.Errorf("Error starting coren-tokenscc chaincode: %s", err)
-	}
-
-	// err := shim.Start(new(Chaincode))
-	// if err != nil {
-	// 	panic(err)
+	// server := &shim.ChaincodeServer{
+	// 	CCID:    os.Getenv("CHAINCODE_CCID"),
+	// 	Address: os.Getenv("CHAINCODE_ADDRESS"),
+	// 	CC:      new(Chaincode),
+	// 	TLSProps: shim.TLSProperties{
+	// 		Disabled: true,
+	// 	},
 	// }
+
+	// // Start the chaincode external server
+	// err := server.Start()
+
+	// if err != nil {
+	// 	log.Errorf("Error starting chaincode: %s", err)
+	// }
+
+	err := shim.Start(new(Chaincode))
+	if err != nil {
+		panic(err)
+	}
 }

@@ -5,7 +5,7 @@ Copyright 2020 Telefónica Digital España. All Rights Reserved.
 SPDX-License-Identifier: Apache-2.0
 
 */
-import {TrustID, Access} from "./trustInterface";
+import {TrustID, AccessPolicy} from "./trustInterface";
 import {HfDriver, HfConfig} from "./hfdriver";
 import {DID} from "../wallet";
 
@@ -167,7 +167,7 @@ export class TrustIdHf extends TrustID {
 	}
 
 	/** Registers new service in the platform */
-	public async createService(did: DID, serviceDID: string, name: string, isPublic: boolean = true, channel: string): Promise<object> {
+	public async createService(did: DID, serviceDID: string, name: string, accessPolicy: AccessPolicy, isPublic: boolean = true, channel: string): Promise<object> {
 		const args = [
 			JSON.stringify({
 				did: did.id,
@@ -195,7 +195,7 @@ export class TrustIdHf extends TrustID {
 	public async updateService(
 		did: DID,
 		serviceDID: string,
-		access: Access,
+		access: AccessPolicy,
 		isPublic: boolean = true
 	): Promise<object> {
 		const args = [
