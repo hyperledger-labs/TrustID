@@ -54,8 +54,10 @@ mQIDAQAB
 -----END PUBLIC KEY-----
 `;
 
-describe("Integration test", () => {
+describe("Integration test", async() => {
+	
 	it("Invoke service", async () => {
+
 		const wal = Wallet.Instance;
 		try {
 			let ccp = JSON.parse(fs.readFileSync(ccpPath, "utf8"));
@@ -95,11 +97,11 @@ describe("Integration test", () => {
 			console.log("Getting created key...");
 			await trustID.getIdentity(await wal.getDID("default"), await didUnlock.id);
 			const id = Date.now();
-			await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "chaincode", access, true, "telefonicachannel");
+			const res = await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "chaincode", access, true, "telefonicachannel");
 			await trustID.updateService(await wal.getDID("default"), `vtn:trustos:service:${id}`, access, true);
 			const result = await trustID.invoke(
 				await wal.getDID("default"),
-				`vtn:trustos:service:1${id}`,
+				`vtn:trustos:service:${id}`,
 				["set", "5", "100"],
 				"telefonicachannel"
 			);
@@ -111,5 +113,6 @@ describe("Integration test", () => {
 
 			console.log(err);
 		}
+			
 	});
 });
