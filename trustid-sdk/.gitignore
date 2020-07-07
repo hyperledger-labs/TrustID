@@ -1,2 +1,6 @@
 dist/
+<<<<<<< HEAD
 
+=======
+node_modules/
+>>>>>>> 15c23b9c83b6b08b016ffac0926ec2cf6f9d2126
