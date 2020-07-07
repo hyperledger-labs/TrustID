@@ -167,7 +167,7 @@ export class TrustIdHf extends TrustID {
 	}
 
 	/** Registers new service in the platform */
-	public async createService(did: DID, serviceDID: string, name: string, accessPolicy: AccessPolicy, isPublic: boolean = true, channel: string): Promise<object> {
+	public async createService(did: DID, serviceDID: string, name: string, accessPolicy: AccessPolicy, channel: string): Promise<object> {
 		const args = [
 			JSON.stringify({
 				did: did.id,
@@ -176,8 +176,8 @@ export class TrustIdHf extends TrustID {
 					params: {
 						did: serviceDID,
 						name: name,
-						isPublic: isPublic,
-						channel: channel
+						channel: channel,
+						accessPolicy: accessPolicy,
 					},
 				}),
 			}),
@@ -195,8 +195,7 @@ export class TrustIdHf extends TrustID {
 	public async updateService(
 		did: DID,
 		serviceDID: string,
-		access: AccessPolicy,
-		isPublic: boolean = true
+		access: AccessPolicy
 	): Promise<object> {
 		const args = [
 			JSON.stringify({
@@ -206,7 +205,6 @@ export class TrustIdHf extends TrustID {
 					params: {
 						did: serviceDID,
 						access: access,
-						isPublic: isPublic,
 					},
 				}),
 			}),

@@ -88,7 +88,7 @@ describe("Integration test", async() => {
 			wal.addNetwork("hf", trustID);
 			await wal.networks["hf"].configureDriver();
 
-			let access: AccessPolicy = {policy: PolicyType.PublicPolicy, threshold: 0, Registry: {}};
+			let access: AccessPolicy = {policy: PolicyType.PublicPolicy};
 
 			const didUnlock = await wal.getDID("default");
 			await didUnlock.unlockAccount("secret");
@@ -97,8 +97,8 @@ describe("Integration test", async() => {
 			console.log("Getting created key...");
 			await trustID.getIdentity(await wal.getDID("default"), await didUnlock.id);
 			const id = Date.now();
-			const res = await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "chaincode", access, true, "telefonicachannel");
-			await trustID.updateService(await wal.getDID("default"), `vtn:trustos:service:${id}`, access, true);
+			const res = await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "chaincode", access,"telefonicachannel");
+			await trustID.updateService(await wal.getDID("default"), `vtn:trustos:service:${id}`, access);
 			const result = await trustID.invoke(
 				await wal.getDID("default"),
 				`vtn:trustos:service:${id}`,

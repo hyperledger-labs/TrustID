@@ -18,8 +18,8 @@ export  abstract class  TrustID {
     abstract verifyIdentity(adminDID: DID, id:string): Promise<object>;
     abstract getIdentity(did: DID, id: string): Promise<object>;
     abstract revokeIdentity(adminDID: DID, id: string): Promise<object>; 
-    abstract createService(did: DID, serviceDID: string, name: string, access: AccessPolicy, isPublic: boolean, channel: string): Promise<object>;
-    abstract updateService(did: DID, serviceDID: string, access: AccessPolicy, isPublic: boolean): Promise<object>;
+    abstract createService(did: DID, serviceDID: string, name: string, access: AccessPolicy, channel: string): Promise<object>;
+    abstract updateService(did: DID, serviceDID: string, access: AccessPolicy): Promise<object>;
     abstract getService(did: DID, serviceDID: string): Promise<object>;
     abstract invoke (did: DID, serviceDID: string, args: string[], channel: string): Promise<object>;
     abstract query(did: DID, serviceDID: string, args: string[], channel: string): Promise<object>;
@@ -35,6 +35,7 @@ export enum PolicyType {
 
 export interface AccessPolicy {
     policy: PolicyType,
-    threshold: Number,
-    Registry: object,
+    threshold?: Number,
+    registry?: object,
 }
+

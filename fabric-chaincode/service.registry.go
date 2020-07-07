@@ -72,7 +72,7 @@ func (cc *Chaincode) getServiceRegistry(stub shim.ChaincodeStubInterface, didSer
 // 	return service.Name, access, nil
 // }
 
-func (cc *Chaincode) updateRegistryAccess(stub shim.ChaincodeStubInterface, didService string, accessPolicy AccessPolicy) (string, error) {
+func (cc *Chaincode) updateRegistryAccess(stub shim.ChaincodeStubInterface, didController string, didService string, accessPolicy AccessPolicy) (string, error) {
 
 	log.Infof("[%s][updateRegistryAccess] Get Service for did %s", ServiceREGISTRY, didService)
 	service, err := cc.getServiceRegistry(stub, didService)
@@ -80,9 +80,10 @@ func (cc *Chaincode) updateRegistryAccess(stub shim.ChaincodeStubInterface, didS
 		log.Errorf("[%s][updateRegistryAccess] Error getting service: %v", ServiceREGISTRY, err.Error())
 		return "", errors.New("Error getting service in update" + err.Error())
 	}
-	// if len(service.Access) == 0 {
-	// 	service.Access = make(map[string]int)
-	// }
+	if didController != service.Controller {
+		log.Errorf("[%s][updateRegistryAccess] User has not access to update Registry")
+		return "", errors.New("User has not access to update de service")
+	}
 
 	// service.Access[didAccess] = accessType
 	service.updateAccess(accessPolicy)

@@ -68,7 +68,7 @@ func (cc *Chaincode) checkArgs(stub shim.ChaincodeStubInterface, args []string) 
 
 	}
 	if params["function"].(string) == "updateServiceAccess" {
-		result, err = cc.updateServiceAccess(stub, params["params"])
+		result, err = cc.updateServiceAccess(stub, idReq.Did, params["params"])
 
 	}
 	if params["function"].(string) == "invoke" {

@@ -94,7 +94,7 @@ func (cc *Chaincode) hasAccess(stub shim.ChaincodeStubInterface, service *Servic
 		}
 	case FineGrainedPolicy:
 		userLevel := service.Access.Registry[userDid]
-		if userLevel <= service.Access.Threshold {
+		if userLevel >= service.Access.Threshold {
 			return true
 		}
 	}
