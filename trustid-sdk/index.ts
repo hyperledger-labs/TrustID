@@ -11,5 +11,9 @@ import {FileKeystore} from "./src/keystore/fileKeystore";
 import {MongoKeystore} from "./src/keystore/mongoKeystore";
 import {LocalStorageKeystore} from "./src/keystore/localStorageKeystore";
 import {TrustIdHf} from "./src/network/trustHF"
+import {AccessPolicy, PolicyType} from "./src/network/trustInterface";
 
-export {Wallet, DID, FileKeystore, MongoKeystore, LocalStorageKeystore, TrustIdHf};
+export {Wallet, DID, 
+    FileKeystore, MongoKeystore, 
+    LocalStorageKeystore, TrustIdHf,
+    AccessPolicy, PolicyType};
