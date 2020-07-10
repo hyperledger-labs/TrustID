@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 */
 import {Wallet} from "../../src/wallet";
-import {Access} from "../../src/network/trustInterface";
+import {AccessPolicy, PolicyType} from "../../src/network/trustInterface";
 import {expect} from "chai";
 
 import {TrustIdHf} from "../../src/network/trustHF";
@@ -54,8 +54,10 @@ mQIDAQAB
 -----END PUBLIC KEY-----
 `;
 
-describe("Integration test", () => {
+describe("Integration test", async() => {
+	
 	it("Invoke service", async () => {
+
 		const wal = Wallet.Instance;
 		try {
 			let ccp = JSON.parse(fs.readFileSync(ccpPath, "utf8"));
@@ -86,20 +88,20 @@ describe("Integration test", () => {
 			wal.addNetwork("hf", trustID);
 			await wal.networks["hf"].configureDriver();
 
-			let access: Access = {did: "did:vtn:trustos:telefonica:0", type: 2};
+			let access: AccessPolicy = {policy: PolicyType.PublicPolicy};
 
 			const didUnlock = await wal.getDID("default");
 			await didUnlock.unlockAccount("secret");
-			await wal.networks["hf"].createIdentity(await wal.getDID("default"));
+			await wal.networks["hf"].createSelfIdentity(await wal.getDID("default"));
 
 			console.log("Getting created key...");
 			await trustID.getIdentity(await wal.getDID("default"), await didUnlock.id);
 			const id = Date.now();
-			await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "chaincode", true, "telefonicachannel");
-			await trustID.updateService(await wal.getDID("default"), `vtn:trustos:service:${id}`, access, true);
+			const res = await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "chaincode", access,"telefonicachannel");
+			await trustID.updateService(await wal.getDID("default"), `vtn:trustos:service:${id}`, access);
 			const result = await trustID.invoke(
 				await wal.getDID("default"),
-				`vtn:trustos:service:1${id}`,
+				`vtn:trustos:service:${id}`,
 				["set", "5", "100"],
 				"telefonicachannel"
 			);
@@ -111,5 +113,6 @@ describe("Integration test", () => {
 
 			console.log(err);
 		}
+			
 	});
 });
