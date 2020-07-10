@@ -1,14 +1,11 @@
 {
-    "name": "@hyperledger-labs/trustid-sdk",
+    "name": "trustid-sdk",
     "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "bin": {
-        "trustid-sdk": "./dist/index.js"
-    },
     "scripts": {
-        "test": "mocha --require ts-node/register dist/test/integration",
+        "test": "mocha --timeout 50000  --require ts-node/register dist/test/integration",
         "build": "rm -rf dist && tsc",
         "build-light": "rm -rf dist-light && tsc --build tsconfig-light.json",
         "build-single-file": "rm -rf dist-light && tsc --build tsconfig-singleFile.json",
@@ -18,14 +15,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com:hyperledger-labs/TrustID.git"
+        "url": "git+https://github.com/telefonicablockchain/trustid.git"
     },
     "author": "",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/hyperledger-labs/TrustID/issues"
+        "url": "https://github.com/telefonicablockchain/trustid/issues"
     },
-    "homepage": "https://github.com/hyperledger-labs/TrustID#readme",
+    "homepage": "https://github.com/telefonicablockchain/trustid/trustid-sdk#readme",
     "dependencies": {
         "@types/mongoose": "^5.7.14",
         "@types/node": "^13.7.1",
@@ -57,8 +54,5 @@
     "optionalDependencies": {
         "fabric-ca-client": "2.1.0",
         "fabric-network": "v2.1.0"
-    },
-    "publishConfig": {
-        "registry": "https://npm.pkg.github.com/"
     }
 }

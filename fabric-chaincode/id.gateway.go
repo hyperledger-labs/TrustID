@@ -45,15 +45,18 @@ func (cc *Chaincode) getIdentity(stub shim.ChaincodeStubInterface, did string, i
 	return string(idBytes), nil
 }
 
-func (cc *Chaincode) createIdentity(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	idReq := IdentityRequest{}
-	err := json.Unmarshal([]byte(args[0]), &idReq)
+func (cc *Chaincode) createIdentity(stub shim.ChaincodeStubInterface, controller string, args interface{}) (string, error) {
+	idReq := make(map[string]interface{})
+	idReq = args.(map[string]interface{})
 
+	log.Debugf("[%s][createIdentity] Calling to registry", IDGATEWAY)
+
+	identityStore := Identity{PublicKey: idReq["publicKey"].(string), Controller: controller}
+	_, err := cc.createIDRegistry(stub, idReq["did"].(string), identityStore)
 	if err != nil {
-		log.Errorf("[%s][CreateIdentity] Error parsing: %v", IDGATEWAY, err.Error())
+		log.Errorf("[%s][createIdentity] Error creating Identity: %v", IDGATEWAY, err.Error())
+		return "", err
 	}
-	identityStore := Identity{PublicKey: idReq.PublicKey, Controller: idReq.Did}
-	_, err = cc.createIDRegistry(stub, idReq.Did, identityStore)
 
 	return "", nil
 
@@ -80,7 +83,7 @@ func (cc *Chaincode) verifyIdentity(stub shim.ChaincodeStubInterface, did string
 
 	log.Infof("[%s][verifyIdentity] Idenitity has access %v", IDGATEWAY, identity.Access)
 
-	if identity.Access == 0 {
+	if identity.Access != 4 {
 		log.Errorf("[%s][verifyIdentity] Identity has not access to verify", IDGATEWAY)
 		return "", errors.New("Verification unauthorized, the did provided has not access")
 	}
@@ -92,7 +95,7 @@ func (cc *Chaincode) verifyIdentity(stub shim.ChaincodeStubInterface, did string
 	}
 	log.Infof("[%s][verifyIdentity]Idenitity updated", IDGATEWAY)
 
-	return "", nil
+	return "The Identity has been verified", nil
 
 }
 
@@ -102,18 +105,18 @@ func (cc *Chaincode) revokeIdentity(stub shim.ChaincodeStubInterface, did string
 	idReq := make(map[string]interface{})
 	idReq = args.(map[string]interface{})
 
-	if identity.Access == 0 {
+	if identity.Access != 4 {
 		log.Errorf("[%s][revokeIdentity] Identity has not access to revoke", IDGATEWAY)
 		return "", errors.New("Identity has not access to revoke")
 	}
 
 	_, err = cc.revokeIDRegistry(stub, idReq["did"].(string), did)
 	if err != nil {
-		log.Errorf("[%s][revokeIdentity] Error verifying signature: %v", IDGATEWAY, err.Error())
+		log.Errorf("[%s][revokeIdentity] Error revoking signature: %v", IDGATEWAY, err.Error())
 		return "", err
 	}
 	log.Infof("[%s][revokeIdentity]Idenitity revoked", IDGATEWAY)
 
-	return "", nil
+	return "Identity revoked successfully", nil
 
 }

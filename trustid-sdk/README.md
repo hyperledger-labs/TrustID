@@ -7,15 +7,15 @@ TRUSTID-based DLT networks.
 ### Install
 * To install this library you need access to the private repo:
 ```
-npm install core-id-sdk
+$ npm install @hyperledger-labs/trustid-sdk@1.0.0
 ```
 
 ### Example of use
 ```js
 // Use library
-var id = require('coren-id-sdk')
-import { Keystore } from './keystore/keystore';
-
+var id = require('trustid-sdk')
+import { TrustIdHf, Keystore, FileKeystore } from 'trustid-sdk';
+import {AccessPolicy, PolicyType} from 'trustid-sdk';
 
 // Initialize wallet
 wal = id.Wallet.Instance;
@@ -55,7 +55,10 @@ await wal.networks["hf"].configureDriver();
 wal.generateDID("RSA")
 await wal.networks["hf"].createIdentity(wal.getDID("default"))
 await trustID.getIdentity(wal.getDID("default"), wal.getDID("default").id);
-await trustID.createService(wal.getDID("default"), `vtn:trustos:service:1`, "chaincode", true);
+
+let access: AccessPolicy = {policy: PolicyType.PublicPolicy};
+
+await trustID.createService(wal.getDID("default"), `vtn:trustos:service:1`, "chaincode", access, "mychannel");
 
 ```
 
@@ -76,7 +79,7 @@ exposes the following methods:
     * `public pubkey: string`: PublicKey of the DID.
     * `public type: string`: Key type (RSA / EC / OKP).
     * `public controller: string`: Verifier of the identity
-    * `public access: number`: Access level
+    * `public access: number`: Access level. This is the access level to be checked in the service AccessPolicy threshold.
     * `private privkey: string`: Private Key of the DID.
 
     And exposes the following functions:
@@ -85,7 +88,7 @@ exposes the following methods:
     * `public sign(payload: object, passphrase: string = ""): string`: Sign a payload with a specific DID.
     * `public verify(signature: string, id: string = "default"): any`: Verifies a signature from a DID.
 
-* `driver.ts`: Interface that enables the implementation of connection drivers with different TRUSTID networks. The only driver implemented currently is
+* `trustInterface.ts`: Interface that enables the implementation of connection drivers with different TRUSTID networks. The only driver implemented currently is
 the `hfdriver.ts` enabling the interaction with Hyperledger Fabric TrustID
 networks.
 
@@ -94,11 +97,28 @@ networks.
     * `verifyIdentity(adminDID: DID, id:string): Promise<object>`: Verifies an identity as an admin.
     * `getIdentity(did: DID, id: string): * Promise<object>`: Gets a registered identity from TrustID.
     * `revokeIdentity(adminDID: DID, id: string): Promise<object>`: Revokes a registered identity. Only supported by the owner or controller of the DID.
-    * `createService(did: DID, serviceDID: string, name: string, isPublic: boolean): Promise<object>`: Creates a new service in the TrustID network.
+    * `createService(did: DID, serviceDID: string, name: string, access: AccessPolicy, channel: string): Promise<object>`: Creates a new service in the TrustID network.
     * `updateService(did: DID, serviceDID: string, access: Access, isPublic: boolean): Promise<object>`: Updates the information from a service.
     * `getService(did: DID, serviceDID: string): Promise<object>`: Gets information from a registered service.
     * `invoke (did: DID, serviceDID: string, args: string[], channel: string): Promise<object>`: Invokes a function of a registered service in the TrustID network.
     * `query(did: DID, serviceDID: string, args: string[], channel: string): Promise<object>`: Queries a function of a registered service in the TrustID network
+    * `PolicyType (policy: PolicyType, threshold:?Number, registry:?object)`: It
+    defined the policyType to be used for a service. There are currently three
+    types of policyTypes supported (more could be easily added according to
+    your needs)
+        * PublicPolicy: Grants public access by any user to your service.
+        * SameControllerPolicy: Only verified identities whose controller is the
+        same controller who created the service has access to the service (this
+        policy comes pretty handy when you want to define "corporate-wide" services).
+        * FineGrainedPolicy: Grants fine-grained access to users to your service.
+        In this policy you explicitly define the access of users to the service.
+        There are two ways of using this policyType, you can define a threshold
+        so every user with an access level equal or higher than the threshold
+        is granted access to the service; or you could use fine-grained
+        access levels defined in the registry, where you would add the following
+        tuple: `{<did>, <access_role>}`. Thus, only users in the registry 
+        with an access level over the threshold will be granted access to the
+        service with `access_role` permissions.
 
 * `keystore.ts`: Interface that enables the implementation of keystore storages.
     There are currently two implementations of keystore supported: `FileKeystore.ts` (to store DIDs in file keystore)and `MongoKeystore.ts` (to store DIDs in MongoDB). 
