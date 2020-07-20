@@ -9,6 +9,7 @@ import {HfDriver} from "../src/network/hfdriver";
 import {TrustIdHf} from "../src/network/trustHF";
 import {DID} from "../src/wallet";
 import {Wallet} from "../src/wallet";
+import { AccessPolicy, PolicyType} from "../src/network/trustInterface";
 
 /* global describe, it, before, after */
 const {expect} = require("chai");
@@ -123,7 +124,7 @@ describe("TrustHF - Test", async() => {
 		it("Create Identity", async () => {
 			try {
 				const trustID = new TrustIdHf(config);
-				const result = await trustID.createIdentity(identity);
+				const result = await trustID.createSelfIdentity(identity);
 				expect(result).to.equal("OK");
 			} catch (err) {
 				console.log(err);
@@ -152,7 +153,7 @@ describe("TrustHF - Test", async() => {
 		it("Create Identity", async () => {
 			try {
 				const trustID = new TrustIdHf(config);
-				const result = await trustID.createIdentity(identity);
+				const result = await trustID.createSelfIdentity(identity);
 				expect(result).to.equal("OK");
 			} catch (err) {
 				console.log(err);
@@ -161,7 +162,7 @@ describe("TrustHF - Test", async() => {
 		it("Create Fail", async () => {
 			try {
 				const trustID = new TrustIdHf(config);
-				await trustID.createIdentity(identity);
+				await trustID.createSelfIdentity(identity);
 			} catch (err) {
 				expect(err.message).to.equal("Error calling contract");
 			}
@@ -262,6 +263,8 @@ describe("TrustHF - Test", async() => {
 	});
 	describe("Create Service ", () => {
 		let driverStub: any;
+		let access: AccessPolicy = {policy: PolicyType.PublicPolicy, threshold: 0, Registry: {}};
+
 		before((done) => {
 			driverStub = sinon.stub(HfDriver.prototype, "callContractTransaction").resolves("OK");
 			driverStub.onSecondCall().rejects(new Error("Error calling contract"));
@@ -276,7 +279,7 @@ describe("TrustHF - Test", async() => {
 		it("Create Service Success", async () => {
 			try {
 				const trustID = new TrustIdHf(config);
-				const result = await trustID.createService(identity, "id", "name");
+				const result = await trustID.createService(identity, "id", "name", access, true, "channel");
 				expect(result).to.equal("OK");
 			} catch (err) {
 				console.log(err);
@@ -285,7 +288,7 @@ describe("TrustHF - Test", async() => {
 		it("Create Service Fail", async () => {
 			try {
                 const trustID = new TrustIdHf(config);
-				const result = await trustID.createService(identity, "id", "name");
+				const result = await trustID.createService(identity, "id", "name", access, true, "channel");
 			} catch (err) {
 				expect(err.message).to.equal("Error calling contract");
 			}
@@ -303,10 +306,9 @@ describe("TrustHF - Test", async() => {
 			driverStub.restore();
 			done();
         });
-        let access = {
-            type: 1,
-            did: "ksjdskjd"
-        }
+		
+		let access: AccessPolicy = {policy: PolicyType.PublicPolicy, threshold: 0, Registry: {}};
+
 
 		it("Update Service Success", async () => {
 			try {
@@ -339,10 +341,8 @@ describe("TrustHF - Test", async() => {
 			driverStub.restore();
 			done();
         });
-        let access = {
-            type: 1,
-            did: "ksjdskjd"
-        }
+		let access: AccessPolicy = {policy: PolicyType.PublicPolicy, threshold: 0, Registry: {}};
+
 
 		it("Get Service Success", async () => {
 			try {

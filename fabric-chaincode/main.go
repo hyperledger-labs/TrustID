@@ -33,7 +33,7 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) sc.Response {
 	if err != nil {
 		log.Errorf("[IdentityGateway][CreateIdentity] Error parsing: %v", err.Error())
 	}
-	identityStore := Identity{PublicKey: idReq.PublicKey, Controller: idReq.Controller, Access: 0}
+	identityStore := Identity{PublicKey: idReq.PublicKey, Controller: idReq.Controller, Access: 4}
 	_, err = cc.createIDRegistry(stub, idReq.Did, identityStore)
 	log.Infof("[IdentityCC][Init] Chaincode initialized")
 
@@ -42,6 +42,7 @@ func (cc *Chaincode) Init(stub shim.ChaincodeStubInterface) sc.Response {
 
 // Invoke is called as a result of an application request to run the chaincode.
 func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) sc.Response {
+	log.Init("DEBUG")
 	fcn, params := stub.GetFunctionAndParameters()
 	var err error
 	var result string
@@ -58,6 +59,23 @@ func (cc *Chaincode) Invoke(stub shim.ChaincodeStubInterface) sc.Response {
 }
 
 func main() {
+
+	// server := &shim.ChaincodeServer{
+	// 	CCID:    os.Getenv("CHAINCODE_CCID"),
+	// 	Address: os.Getenv("CHAINCODE_ADDRESS"),
+	// 	CC:      new(Chaincode),
+	// 	TLSProps: shim.TLSProperties{
+	// 		Disabled: true,
+	// 	},
+	// }
+
+	// // Start the chaincode external server
+	// err := server.Start()
+
+	// if err != nil {
+	// 	log.Errorf("Error starting chaincode: %s", err)
+	// }
+
 	err := shim.Start(new(Chaincode))
 	if err != nil {
 		panic(err)

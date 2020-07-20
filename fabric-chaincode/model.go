@@ -25,25 +25,49 @@ type Identity struct {
 type IdentityRequest struct {
 	Did        string `json:"did"`
 	Controller string `json:"controller,omitempty"`
-	PublicKey  string `json:"publicKey,omitempty"`
+	PublicKey  string `json:"publicKey"`
 	Payload    string `json:"payload,omitempty"` // me pasa una firma // el controller lo meto yo
 	Access     int    `json:"access,omitempty"`
 }
 
 // Service stored in bc
 type Service struct {
-	Name       string         `json:"name"`
-	Controller string         `json:"controller,omitempty"` // issuer's DID
-	Access     map[string]int `json:"access,omitempty"`     // mapping did - access type
-	Public     bool           `json:"isPublic"`
-	Channel    string         `json:"channel"`
+	Name       string `json:"name"`
+	Controller string `json:"controller,omitempty"` // issuer's DID
+	// Access     map[string]int `json:"access,omitempty"`     // mapping did - access type
+	Access AccessPolicy `json:"access,omitempty"` // issuer's DID
+	// Access     map[string]int `json:"access,omit
+	// TODO: Remove, it will be included in the access policy
+
+	Channel string `json:"channel"`
+}
+
+// PolicyType ..
+type PolicyType string
+
+const (
+	// PublicPolicy the service is public
+	PublicPolicy PolicyType = "PUBLIC"
+	// SameControllerPolicy the controller service must be equal to the did's controller that is invoking the service
+	SameControllerPolicy = "SAME_CONTROLLER"
+	// FineGrainedPolicy anyone with access can interact
+	FineGrainedPolicy = "FINE_GRAINED"
+	// TODO: You can add additional PolicyTypes. Remember to add verification
+	// logic in hasAccess from chaincode.gateway.go.
+)
+
+// AccessPolicy policy
+type AccessPolicy struct {
+	Policy    PolicyType     `json:"policy"`
+	Threshold int            `json:"threshold,omitempty"`
+	Registry  map[string]int `json:"registry,omitempty"`
 }
 
 // ServiceRequest stored in bc
 type ServiceRequest struct {
-	Name   string `json:"name"`
-	Did    string `json:"did"`
-	Public bool   `json:"isPublic"`
+	Name   string       `json:"name"`
+	Did    string       `json:"did"`
+	Access AccessPolicy `json:"access,omitempty"`
 }
 
 // IdentityUnverifiedRequest to serialize args
@@ -69,8 +93,8 @@ const (
 	ERRORGetState        = `Failed to get data from the ledger. `
 	ERRORDelState        = `Failed to delete data from the ledger. `
 	ERRORChaincodeCall   = `Error calling chaincode`
-	IDGATEWAY            = `IDGateway`
-	IDREGISTRY           = `IDRegistry`
-	ServiceGATEWAY       = `IDGateway`
-	ServiceREGISTRY      = `IDRegistry`
+	IDGATEWAY            = `ID Gateway`
+	IDREGISTRY           = `ID Registry`
+	ServiceGATEWAY       = `ID Service Gateway`
+	ServiceREGISTRY      = `ID Service Registry`
 )

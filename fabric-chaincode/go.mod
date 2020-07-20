@@ -5,7 +5,6 @@ go 1.12
 require (
 	github.com/fsouza/go-dockerclient v1.6.5 // indirect
 	github.com/go-logfmt/logfmt v0.4.0 // indirect
-	github.com/hyperledger/fabric v1.4.4
 	github.com/hyperledger/fabric-amcl v0.0.0-20200424173818-327c9e2cf77a // indirect
 	github.com/hyperledger/fabric-chaincode-go v0.0.0-20200511190512-bcfeb58dd83a
 	github.com/hyperledger/fabric-lib-go v1.0.0 // indirect
