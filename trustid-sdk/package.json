@@ -5,7 +5,7 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "test": "mocha --require ts-node/register dist/test/integration",
+        "test": "mocha --timeout 50000  --require ts-node/register dist/test/integration",
         "build": "rm -rf dist && tsc",
         "build-light": "rm -rf dist-light && tsc --build tsconfig-light.json",
         "build-single-file": "rm -rf dist-light && tsc --build tsconfig-singleFile.json",

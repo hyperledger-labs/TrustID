@@ -44,8 +44,9 @@ func (cc *Chaincode) getServiceRegistry(stub shim.ChaincodeStubInterface, didSer
 	log.Infof("[%s][getIDRegistry] Get Service for did %s", ServiceREGISTRY, didService)
 	idStored := Service{}
 	idBytes, err := stub.GetState(didService)
-	if idBytes == nil {
-		log.Errorf("[%s][createServiceRegistry] The service doesn't exist", ServiceREGISTRY)
+
+	if len(idBytes) == 0 {
+		log.Errorf("[%s][getIDRegistry] The service doesn't exist", ServiceREGISTRY)
 		return nil, errors.New("The service doesn't exist")
 	}
 	if err != nil {
@@ -71,7 +72,7 @@ func (cc *Chaincode) getServiceRegistry(stub shim.ChaincodeStubInterface, didSer
 // 	return service.Name, access, nil
 // }
 
-func (cc *Chaincode) updateRegistryAccess(stub shim.ChaincodeStubInterface, didService string, didAccess string, accessType int) (string, error) {
+func (cc *Chaincode) updateRegistryAccess(stub shim.ChaincodeStubInterface, didController string, didService string, accessPolicy AccessPolicy) (string, error) {
 
 	log.Infof("[%s][updateRegistryAccess] Get Service for did %s", ServiceREGISTRY, didService)
 	service, err := cc.getServiceRegistry(stub, didService)
@@ -79,11 +80,14 @@ func (cc *Chaincode) updateRegistryAccess(stub shim.ChaincodeStubInterface, didS
 		log.Errorf("[%s][updateRegistryAccess] Error getting service: %v", ServiceREGISTRY, err.Error())
 		return "", errors.New("Error getting service in update" + err.Error())
 	}
-	if len(service.Access) == 0 {
-		service.Access = make(map[string]int)
+	if didController != service.Controller {
+		log.Errorf("[%s][updateRegistryAccess] User has not access to update Registry")
+		return "", errors.New("User has not access to update de service")
 	}
 
-	service.Access[didAccess] = accessType
+	// service.Access[didAccess] = accessType
+	service.updateAccess(accessPolicy)
+
 	idBytes, err := json.Marshal(service)
 	if err != nil {
 		log.Errorf("[%s][updateRegistryAccess] Error parsing: %v", ServiceREGISTRY, err.Error())
@@ -95,4 +99,29 @@ func (cc *Chaincode) updateRegistryAccess(stub shim.ChaincodeStubInterface, didS
 		return "", errors.New("Error updating service" + err.Error())
 	}
 	return "Registry updated sucessfully", nil
+}
+
+func (s *Service) updateAccess(newAccess AccessPolicy) {
+
+	if newAccess.Policy == "" {
+		s.Access = AccessPolicy{Policy: PublicPolicy}
+		return
+	}
+
+	//TODO: Update a bit smarter.
+	// If
+	switch newAccess.Policy {
+	case SameControllerPolicy:
+		s.Access = newAccess
+	case FineGrainedPolicy:
+		// Update threshold if present
+		s.Access.Threshold = newAccess.Threshold
+		s.Access.Policy = newAccess.Policy
+		// Update in service the keys that are present.
+		for k, v := range newAccess.Registry {
+			s.Access.Registry[k] = v
+		}
+	default:
+		s.Access = AccessPolicy{Policy: PublicPolicy}
+	}
 }

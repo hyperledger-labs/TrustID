@@ -1,0 +1,28 @@
+env:
+  node: true
+  commonjs: true
+  es6: true
+extends: 'eslint:recommended'
+parser: '@typescript-eslint/parser'
+plugins:
+  - '@typescript-eslint'
+parserOptions:
+  sourceType: module
+  ecmaVersion: 2017
+rules:
+  indent:
+    - error
+    - tab
+  linebreak-style:
+    - off
+  quotes:
+    - off
+  semi:
+    - error
+    - never
+  no-useless-escape:
+    - warn
+  no-console:
+    - off
+  no-var:
+    - error

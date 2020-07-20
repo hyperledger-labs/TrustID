@@ -11,6 +11,7 @@ import (
 	log "coren-identitycc/src/chaincode/log"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 )
@@ -71,7 +72,7 @@ func (cc *Chaincode) updateIDRegistry(stub shim.ChaincodeStubInterface, did stri
 	identity, err := cc.getIDRegistry(stub, did)
 	if err != nil {
 		log.Errorf("[%s][updateIDRegistry] Problem getting identity: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error getting identity:" + err.Error())
+		return "", errors.New("Error getting identity: " + err.Error())
 	}
 
 	identity.Controller = didController
@@ -84,7 +85,7 @@ func (cc *Chaincode) updateIDRegistry(stub shim.ChaincodeStubInterface, did stri
 	err = stub.PutState(did, idBytes)
 	if err != nil {
 		log.Errorf("[%s][updateIDRegistry] Error parsing: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error updatin in the ledger" + err.Error())
+		return "", errors.New("Error updating in the ledger" + err.Error())
 	}
 	log.Infof("[%s][updateIDRegistry] Identity updated", IDREGISTRY)
 
@@ -95,8 +96,9 @@ func (cc *Chaincode) revokeIDRegistry(stub shim.ChaincodeStubInterface, did stri
 	identity, err := cc.getIDRegistry(stub, did)
 	if err != nil {
 		log.Errorf("[%s][revokeIDRegistry] Problem checking identity: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error in revoke" + err.Error())
+		return "", errors.New("Error in revoke: " + err.Error())
 	}
+	fmt.Printf(didController)
 	if identity.Controller != didController {
 		err := errors.New("Unauthorized: The did provided has not access to revoke the identity")
 		log.Errorf("[%s][revokeIDRegistry] This is not the identity controller: %v", IDREGISTRY, err.Error())
@@ -109,7 +111,7 @@ func (cc *Chaincode) revokeIDRegistry(stub shim.ChaincodeStubInterface, did stri
 		log.Errorf("[%s][revokeIDRegistry] Error parsing: %v", IDREGISTRY, err.Error())
 		return "", errors.New("Error deleting from ledger" + err.Error())
 	}
-	log.Infof("[%s][updateIDRegistry] Identity revoked successfully", IDREGISTRY)
+	log.Infof("[%s][revokeIDRegistry] Identity revoked successfully", IDREGISTRY)
 
-	return "", nil
+	return "Identity revoked successfully", nil
 }
