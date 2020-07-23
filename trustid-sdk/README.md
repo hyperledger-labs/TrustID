@@ -8,9 +8,39 @@ TRUSTID-based DLT networks.
 * To install this library you need access to the private repo:
 ```
 $ npm install @hyperledger-labs/trustid-sdk@1.0.0
+
+```
+
+### Getting started
+
+To use the sdk it's necessary to read the [Getting started guide](../README.md)
+
+The SDK to connect with Hyperledger Fabric will need to configure the connection. On one side we need the hyperledger fabric standard [connection profile](./connection-profile.json), on the othe side we will need to complete de following configuration in a JSON object.
+```js
+{
+    stateStore: '',
+    caURL: '',
+    caName: '',
+    caAdmin: '',
+    caPassword: '',
+    tlsOptions: {
+        trustedRoots:"",
+        verify: false
+    },
+    mspId: '',
+    walletID: '',
+    asLocalhost: ,
+    ccp: connection profile commented bellow,
+    chaincodeName: "name of the identity chaincode deployed",
+    fcn: "proxy",
+    channel: ""
+}
+
 ```
 
 ### Example of use
+You can find a set of examples using the SDK in the [examples](../examples) directory.
+
 ```js
 // Use library
 var id = require('trustid-sdk')
