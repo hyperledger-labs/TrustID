@@ -8,6 +8,7 @@ TRUSTID-based DLT networks.
 * To install this library you need access to the private repo:
 ```
 $ npm install @hyperledger-labs/trustid-sdk@1.0.0
+
 ```
 
 ### Getting started
@@ -34,6 +35,7 @@ The SDK to connect with Hyperledger Fabric will need to configure the connection
     fcn: "proxy",
     channel: ""
 }
+
 ```
 
 ### Example of use
