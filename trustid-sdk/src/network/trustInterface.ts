@@ -20,9 +20,11 @@ export  abstract class  TrustID {
     abstract revokeIdentity(adminDID: DID, id: string): Promise<object>; 
     abstract createService(did: DID, serviceDID: string, name: string, access: AccessPolicy, channel: string): Promise<object>;
     abstract updateService(did: DID, serviceDID: string, access: AccessPolicy): Promise<object>;
-    abstract getService(did: DID, serviceDID: string): Promise<object>;
+    abstract getService(did: DID, serviceDID: string): Promise<string>;
     abstract invoke (did: DID, serviceDID: string, args: string[], channel: string): Promise<object>;
     abstract query(did: DID, serviceDID: string, args: string[], channel: string): Promise<object>;
+    abstract subscribeEventService(did: DID, serviceDID: string, eventName: string): any;
+    abstract checkConnection(): Promise<boolean>;
 
 
 }
