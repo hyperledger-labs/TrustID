@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 package main
 
 import (
-	log "coren-identitycc/src/chaincode/log"
+	log "TrustID/fabric-chaincode/log"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,50 +19,50 @@ import (
 var ccErrorCode = "CC-01"
 
 func (cc *Chaincode) createIDRegistry(stub shim.ChaincodeStubInterface, did string, identity Identity) (string, error) {
-	log.Infof("[%s][createIDRegistry] Create Identity for did %s", IDREGISTRY, did)
+	log.Infof("[%s][%s][createIDRegistry] Create Identity for did %s", CHANNEL_ENV, IDREGISTRY, did)
 	bytes, err := stub.GetState(did)
 
 	if bytes != nil {
-		log.Errorf("[%s][createIDRegistry] The identity already exists", IDREGISTRY)
-		log.Errorf("[%s][createIDRegistry] Return error", IDREGISTRY)
-		return "", errors.New("Error creating ID in registry. The identity already exists")
+		log.Errorf("[%s][%s][createIDRegistry] The identity already exists", CHANNEL_ENV, IDREGISTRY)
+		log.Errorf("[%s][%s][createIDRegistry] Return error", CHANNEL_ENV, IDREGISTRY)
+		return "", errors.New(ERRORIDExists)
 	}
 	idBytes, err := json.Marshal(identity)
 	if err != nil {
-		log.Errorf("[%s][createIDRegistry] Error parsing: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error parsing identity:" + err.Error())
+		log.Errorf("[%s][%s][createIDRegistry] Error parsing: %v", CHANNEL_ENV, IDREGISTRY, err.Error())
+		return "", errors.New(ERRORParsingID + err.Error())
 	}
 
 	err = stub.PutState(did, idBytes)
 	if err != nil {
-		log.Errorf("[%s][createIDRegistry] Error parsing: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error storing identity:" + err.Error())
+		log.Errorf("[%s][%s][createIDRegistry] Error storing: %v", CHANNEL_ENV, IDREGISTRY, err.Error())
+		return "", errors.New(ERRORStoringIdentity + err.Error())
 	}
-	log.Infof("[%s][createIDRegistry] Indentity stored for did %s", IDREGISTRY, did)
+	log.Infof("[%s][%s][createIDRegistry] Indentity stored for did %s", CHANNEL_ENV, IDREGISTRY, did)
 
 	return "", nil
 }
 
 func (cc *Chaincode) getIDRegistry(stub shim.ChaincodeStubInterface, did string) (*Identity, error) {
 
-	log.Infof("[%s][getIDRegistry] Get Identity for did %s", IDREGISTRY, did)
+	log.Infof("[%s][%s][getIDRegistry] Get Identity for did %s", CHANNEL_ENV, IDREGISTRY, did)
 	idStored := Identity{}
 	idBytes, err := stub.GetState(did)
 	if err != nil {
-		log.Errorf("[%s][getIDRegistry] Error getting identity: %v", IDREGISTRY, err.Error())
-		return nil, errors.New("Error getting identity:" + err.Error())
+		log.Errorf("[%s][%s][getIDRegistry] Error getting identity: %v", CHANNEL_ENV, IDREGISTRY, err.Error())
+		return nil, errors.New(ERRORGetID + err.Error())
 	}
 	if idBytes == nil {
-		log.Errorf("[%s][getIDRegistry] The identity doesn't exist", IDREGISTRY)
-		log.Errorf("[%s][getIDRegistry] Return error", IDREGISTRY)
-		return nil, errors.New("The identity doesn't exist")
+		log.Errorf("[%s][%s][getIDRegistry] Error the identity does not exist", CHANNEL_ENV, IDREGISTRY)
+		log.Errorf("[%s][%s][getIDRegistry] Return error", CHANNEL_ENV, IDREGISTRY)
+		return nil, errors.New(ERRORnotID)
 	}
 	err = json.Unmarshal(idBytes, &idStored)
 	if err != nil {
-		log.Errorf("[%s][getIDRegistry] Error parsing identity: %v", IDREGISTRY, err.Error())
-		return nil, errors.New("Error parsing" + err.Error())
+		log.Errorf("[%s][%s][getIDRegistry] Error parsing identity: %v", CHANNEL_ENV, IDREGISTRY, err.Error())
+		return nil, errors.New(ERRORParsingID + err.Error())
 	}
-	log.Infof("[%s][getIDRegistry] Get PublicKey for did %s", IDREGISTRY, did)
+	log.Infof("[%s][%s][getIDRegistry] Get PublicKey for did %s", CHANNEL_ENV, IDREGISTRY, did)
 
 	return &idStored, nil
 }
@@ -71,47 +71,43 @@ func (cc *Chaincode) updateIDRegistry(stub shim.ChaincodeStubInterface, did stri
 	var identity *Identity
 	identity, err := cc.getIDRegistry(stub, did)
 	if err != nil {
-		log.Errorf("[%s][updateIDRegistry] Problem getting identity: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error getting identity: " + err.Error())
+		log.Errorf("[%s][%s][updateIDRegistry] Problem getting identity: %v", CHANNEL_ENV, IDREGISTRY, err.Error())
+		return "", errors.New(ERRORGetID + err.Error())
 	}
 
 	identity.Controller = didController
 	identity.Access = access
 	idBytes, err := json.Marshal(*identity)
 	if err != nil {
-		log.Errorf("[%s][updateIDRegistry] Error parsing: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error parsing when update" + err.Error())
+		log.Errorf("[%s][%s][updateIDRegistry] Error parsing: %v", CHANNEL_ENV, IDREGISTRY, err.Error())
+		return "", errors.New(ERRORParsingID + err.Error())
 	}
 	err = stub.PutState(did, idBytes)
 	if err != nil {
-		log.Errorf("[%s][updateIDRegistry] Error parsing: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error updating in the ledger" + err.Error())
+		log.Errorf("[%s][%s][updateIDRegistry] Error updating identity in ledger: %v", CHANNEL_ENV, IDREGISTRY, err.Error())
+		return "", errors.New(ERRORUpdatingID + err.Error())
 	}
-	log.Infof("[%s][updateIDRegistry] Identity updated", IDREGISTRY)
-
+	log.Infof("[%s][%s][updateIDRegistry] Identity updated", CHANNEL_ENV, IDREGISTRY)
 	return "", nil
 }
 
 func (cc *Chaincode) revokeIDRegistry(stub shim.ChaincodeStubInterface, did string, didController string) (string, error) {
 	identity, err := cc.getIDRegistry(stub, did)
 	if err != nil {
-		log.Errorf("[%s][revokeIDRegistry] Problem checking identity: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error in revoke: " + err.Error())
+		log.Errorf("[%s][%s][revokeIDRegistry] %s: %v", CHANNEL_ENV, IDREGISTRY, ERRORGetID, err.Error())
+		return "", errors.New(ERRORGetID + err.Error())
 	}
 	fmt.Printf(didController)
 	if identity.Controller != didController {
-		err := errors.New("Unauthorized: The did provided has not access to revoke the identity")
-		log.Errorf("[%s][revokeIDRegistry] This is not the identity controller: %v", IDREGISTRY, err.Error())
-
-		return "", errors.New("Error revoking the did provided cannot revoke the identity")
+		log.Errorf("[%s][%s][revokeIDRegistry] Error revoking Unauthorized, the did provided cannot revoke the identity", CHANNEL_ENV, IDREGISTRY)
+		return "", errors.New(ERRORRevoke)
 	}
 
 	err = stub.DelState(did)
 	if err != nil {
-		log.Errorf("[%s][revokeIDRegistry] Error parsing: %v", IDREGISTRY, err.Error())
-		return "", errors.New("Error deleting from ledger" + err.Error())
+		log.Errorf("[%s][%s][revokeIDRegistry] Error deleting from ledger: %v", CHANNEL_ENV, IDREGISTRY, err.Error())
+		return "", errors.New(ERRORRevokeLedger + err.Error())
 	}
-	log.Infof("[%s][revokeIDRegistry] Identity revoked successfully", IDREGISTRY)
-
+	log.Infof("[%s][%s][revokeIDRegistry] Identity revoked successfully", CHANNEL_ENV, IDREGISTRY)
 	return "Identity revoked successfully", nil
 }

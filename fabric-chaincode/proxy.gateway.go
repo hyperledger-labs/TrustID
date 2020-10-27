@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 package main
 
 import (
-	log "coren-identitycc/src/chaincode/log"
+	log "TrustID/fabric-chaincode/log"
 	"encoding/json"
 	"errors"
 
@@ -16,7 +16,7 @@ import (
 )
 
 func (cc *Chaincode) checkArgs(stub shim.ChaincodeStubInterface, args []string) (string, error) {
-	log.Infof("[%s][checkArgs] Get Identity", IDGATEWAY)
+	log.Infof("[%s][%s][checkArgs] Get Identity", CHANNEL_ENV, IDGATEWAY)
 	var result string
 
 	idReq := Request{}
@@ -24,9 +24,11 @@ func (cc *Chaincode) checkArgs(stub shim.ChaincodeStubInterface, args []string) 
 
 	var identity *Identity
 	var publicKey string
+
 	if idReq.PublicKey != "" {
 		publicKey = parseKey(idReq.PublicKey)
 		params, err := checkSignature(idReq.Payload, publicKey)
+
 		if params["function"].(string) == "createSelfIdentity" {
 			result, err = cc.createSelfIdentity(stub, params["params"])
 
@@ -36,7 +38,7 @@ func (cc *Chaincode) checkArgs(stub shim.ChaincodeStubInterface, args []string) 
 	}
 	identity, err = cc.getIDRegistry(stub, idReq.Did)
 	if err != nil {
-		log.Errorf("[%s][revokeIdentity] Error verifying signature: %v", IDGATEWAY, err.Error())
+		log.Errorf("[%s][%s][checkArgs] Error verifying signature: %v", CHANNEL_ENV, IDGATEWAY, err.Error())
 		return "", err
 	}
 
@@ -71,6 +73,10 @@ func (cc *Chaincode) checkArgs(stub shim.ChaincodeStubInterface, args []string) 
 		result, err = cc.updateServiceAccess(stub, idReq.Did, params["params"])
 
 	}
+	if params["function"].(string) == "updateService" {
+		result, err = cc.updateService(stub, idReq.Did, params["params"])
+
+	}
 	if params["function"].(string) == "invoke" {
 		result, err = cc.invoke(stub, idReq.Did, params["params"])
 
@@ -80,17 +86,19 @@ func (cc *Chaincode) checkArgs(stub shim.ChaincodeStubInterface, args []string) 
 }
 
 func checkSignature(payload string, key string) (map[string]interface{}, error) {
+	log.Errorf("[%s][%s][checkSignature] Verifying signature", CHANNEL_ENV, IDGATEWAY)
+
 	message, err := verifySignature(payload, key)
 	if err != nil {
-		log.Errorf("[%s][revokeIdentity] Error verifying signature: %v", IDGATEWAY, err.Error())
-		return nil, errors.New("Error verifying signature" + err.Error())
+		log.Errorf("[%s][%s][checkSignature] Error verifying signature: %v", CHANNEL_ENV, IDGATEWAY, err.Error())
+		return nil, errors.New(ERRORVerSign)
 	}
 	params := make(map[string]interface{})
 
 	err = json.Unmarshal(message, &params)
 	if err != nil {
-		log.Errorf("[%s][checkArgs] Error parsing: %v", IDGATEWAY, err.Error())
-		return nil, errors.New("Error parsing signature")
+		log.Errorf("[%s][%s][checkSignature] Error parsing: %v", CHANNEL_ENV, IDGATEWAY, err.Error())
+		return nil, errors.New(ERRORParsingData)
 	}
 	return params, nil
 }
