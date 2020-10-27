@@ -112,6 +112,11 @@ export class FileKeystore extends Keystore {
             return false;
         }
     }
+   // TO DO
+    public async updateDID(did: DID): Promise<boolean> {
+       
+        return true
+    }
 
 
 

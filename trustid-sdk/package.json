@@ -1,17 +1,17 @@
 {
-    "name": "trustid-sdk",
+    "name": "coren-id-sdk",
     "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "test": "mocha --timeout 50000  --require ts-node/register dist/test/integration",
+        "test": "mocha --timeout 50000  --require ts-node/register dist/test/unit",
         "build": "rm -rf dist && tsc",
         "build-light": "rm -rf dist-light && tsc --build tsconfig-light.json",
         "build-single-file": "rm -rf dist-light && tsc --build tsconfig-singleFile.json",
         "start": "tsc && node ./dist/test.js",
         "docs": "typedoc --out dist/docs --mode modules .",
-        "coverage": "tsc && istanbul cover node_modules/.bin/_mocha -- --recursive --timeout 200000 dist/test"
+        "coverage": "rm -rf dist && tsc && istanbul cover node_modules/.bin/_mocha -- --recursive  --require ts-node/register --timeout 50000 dist/test/unit"
     },
     "repository": {
         "type": "git",

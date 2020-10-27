@@ -15,15 +15,18 @@ export class LocalStorageKeystore extends Keystore {
         "empty",
         "localStorage"
     ]
-
+     localStorage: any;
     constructor() {
         super();
+        this.localStorage = {}
+   
     }
+    
 
     /** getKey gets a key from the keystore of the wallet */
     public async getDID(id: string = "default"): Promise<DID> {
         let did = new DID()
-        const value = localStorage.getItem(id)
+        const value = this.localStorage[id]
         if (value) {
             did.loadFromObject(JSON.parse(value))
         } else {
@@ -36,11 +39,22 @@ export class LocalStorageKeystore extends Keystore {
     /** Stores DID in the permanent keystore */
     public async storeDID(did: DID): Promise<boolean> {
         try {
-            localStorage.setItem(did.id, JSON.stringify(did))
+            this.localStorage[did.id]= JSON.stringify(did);
             return true
         } catch {
             return false
         }
     }
+
+     /** Stores DID in the permanent keystore */
+     public async updateDID(did: DID): Promise<boolean> {
+        try {
+            this.localStorage[did.id]= JSON.stringify(did);
+            return true
+        } catch {
+            return false
+        }
+    }
+
 
 }

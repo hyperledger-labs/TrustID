@@ -13,6 +13,8 @@ export abstract class Driver {
 
 	abstract connect(config: object): any;
 	abstract disconnect(config: object): void;
+	abstract checkConnection(channelName?:string): any;
+
 	abstract callContractTransaction(id: string, fcn: string, args: any, channel?: string): any;
 	abstract getContractTransaction(id: string, fcn: string, args: any, channel?: string): any;
 
