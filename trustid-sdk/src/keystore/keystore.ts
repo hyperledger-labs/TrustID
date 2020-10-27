@@ -17,6 +17,7 @@ export abstract class Keystore {
 
 	abstract async getDID(id: string): Promise<DID>;
 	abstract async storeDID(did: DID): Promise<boolean>;
+	abstract async updateDID(did: DID): Promise<boolean>;
 
 	// Store DID in memory
 	public storeInMemory(did: DID): boolean {

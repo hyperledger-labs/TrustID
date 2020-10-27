@@ -6,8 +6,8 @@ SPDX-License-Identifier: Apache-2.0
 
 */
 import {expect} from "chai";
-import {Wallet} from "../src/wallet";
-import {FileKeystore} from "../src/keystore/fileKeystore";
+import {Wallet} from "../../src/wallet";
+import {FileKeystore} from "../../src/keystore/fileKeystore";
 
 import "mocha";
 
@@ -20,8 +20,6 @@ wal.setKeystore(ks);
 describe("Keystore tests", async () => {
 	const did = await wal.generateDID("RSA", "default", "secret");
 
-	let hfChaincodeServiceStub, jwtHelperStubC;
-
 	it("Creates FileKeystore", () => {
 		expect(ks).to.not.equal({});
 	});
@@ -32,11 +30,24 @@ describe("Keystore tests", async () => {
 	// });
 
 	it("Store and load keystore", () => {
-		let ksfile2 = "./keystore";
 		const did2 = wal.generateDID("RSA");
 		ks.saveKeystore();
 		const ks2 = new FileKeystore("file", ksfile);
 		ks2.loadKeystore("file", ksfile);
 		// expect(ks.getDID(did2.id)).to.eql(did2)
 	});
+
+	it("Store and update keystore", async () => {
+		let ksfile2 = "./keystore";
+		const ks2 = new FileKeystore("file", ksfile2);
+	
+		const did2 = await wal.generateDID("RSA");
+		let res = await ks2.getDID(did2.id)	
+	
+		did2.tempPrivKey ="h23l"
+		
+		ks2.updateDID(did2)
+		 res = await ks2.getDID(did2.id)	
+	
+});
 });

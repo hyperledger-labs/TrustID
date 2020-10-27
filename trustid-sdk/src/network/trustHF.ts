@@ -14,11 +14,7 @@ export interface Config {
 	channel: string;
 	chaincodeName: string;
 	stateStore: string;
-	caURL: string;
 	caName: string;
-	caAdmin: string;
-	caPassword: string;
-	tlsOptions: any;
 	mspId: string;
 	walletID: string;
 	asLocalhost: boolean;
@@ -38,11 +34,7 @@ export class TrustIdHf extends TrustID {
 	async configureDriver(): Promise<void> {
 		const cfg = {
 			stateStore: this.config.stateStore,
-			caURL: this.config.caURL,
 			caName: this.config.caName,
-			caAdmin: this.config.caAdmin,
-			caPassword: this.config.caPassword,
-			tlsOptions: this.config.tlsOptions,
 			mspId: this.config.mspId,
 			walletID: this.config.walletID,
 			asLocalhost: this.config.asLocalhost,
@@ -55,7 +47,7 @@ export class TrustIdHf extends TrustID {
 		await this.driver.disconnect();
 	}
 	/** createIdentity registers a new unverified identity */
-	public async createSelfIdentity(did: DID): Promise<Object> {
+	public async createSelfIdentity(did: DID): Promise<any> {
 		const args = [
 			JSON.stringify({
 				publicKey: did.pubkey,
@@ -77,7 +69,7 @@ export class TrustIdHf extends TrustID {
 		return res;
 	}
 	/** createIdentity registers a new unverified identity */
-	public async createIdentity(did: DID, controller: DID): Promise<Object> {
+	public async createIdentity(did: DID, controller: DID): Promise<any> {
 		const args = [
 			JSON.stringify({
 				did: controller.id,
@@ -99,7 +91,7 @@ export class TrustIdHf extends TrustID {
 		return res;
 	}
 	/** VerifyIdentity allow admins to verify user identityes */
-	public async verifyIdentity(adminDID: DID, id: string): Promise<object> {
+	public async verifyIdentity(adminDID: DID, id: string): Promise<any> {
 		const args = [
 			JSON.stringify({
 				did: adminDID.id,
@@ -122,7 +114,7 @@ export class TrustIdHf extends TrustID {
 	}
 
 	/** Revoke allow admins to revoke user identityes */
-	public async revokeIdentity(adminDID: DID, id: string): Promise<object> {
+	public async revokeIdentity(adminDID: DID, id: string): Promise<any> {
 		const args = [
 			JSON.stringify({
 				did: adminDID.id,
@@ -145,7 +137,7 @@ export class TrustIdHf extends TrustID {
 	}
 
 	/** GetIdentity gets a new identity */
-	public async getIdentity(did: DID, id: string): Promise<object> {
+	public async getIdentity(did: DID, id: string): Promise<any> {
 		const args = [
 			JSON.stringify({
 				did: did.id,
@@ -167,7 +159,7 @@ export class TrustIdHf extends TrustID {
 	}
 
 	/** Registers new service in the platform */
-	public async createService(did: DID, serviceDID: string, name: string, accessPolicy: AccessPolicy, channel: string): Promise<object> {
+	public async createService(did: DID, serviceDID: string, name: string, accessPolicy: AccessPolicy, channel: string): Promise<any> {
 		const args = [
 			JSON.stringify({
 				did: did.id,
@@ -196,7 +188,7 @@ export class TrustIdHf extends TrustID {
 		did: DID,
 		serviceDID: string,
 		access: AccessPolicy
-	): Promise<object> {
+	): Promise<any> {
 		const args = [
 			JSON.stringify({
 				did: did.id,
@@ -219,7 +211,7 @@ export class TrustIdHf extends TrustID {
 	}
 
 	/** Gets information from a service */
-	public async getService(did: DID, serviceDID: string): Promise<object> {
+	public async getService(did: DID, serviceDID: string): Promise<any> {
 		const args = [
 			JSON.stringify({
 				did: did.id,
@@ -238,11 +230,11 @@ export class TrustIdHf extends TrustID {
 			args,
 			this.config.channel
 		);
-		return res;
+		return JSON.parse(res);
 	}
 
 	/** Invokes a chaincode through the proxy */
-	public async invoke(did: DID, serviceDID: string, args: string[], channel: string): Promise<object> {
+	public async invoke(did: DID, serviceDID: string, args: string[], channel: string): Promise<any> {
 		const argsCall = [
 			JSON.stringify({
 				did: did.id,
@@ -267,7 +259,7 @@ export class TrustIdHf extends TrustID {
 	}
 
 	/** Invokes a chaincode through the proxy */
-	public async query(did: DID, serviceDID: string, args: string[], channel: string): Promise<object> {
+	public async query(did: DID, serviceDID: string, args: string[], channel: string): Promise<any> {
 		const argsCall = [
 			JSON.stringify({
 				did: did.id,
@@ -290,4 +282,22 @@ export class TrustIdHf extends TrustID {
 		);
 		return res;
 	}
+	/** Subscribe Event Service */
+	public async subscribeEventService(did: DID, serviceDID: string, eventName: string): Promise<any> {
+	
+		const eventEmitter  = await this.driver.subscribeEvent(this.config.chaincodeName, serviceDID, eventName, this.config.channel);
+		return eventEmitter;
+
+	}
+
+	public async checkConnection(): Promise<boolean> {
+	
+		const connection  = await this.driver.checkConnection(this.config.channel);
+	
+		return connection;
+
+	}
+
 }
+
+	
