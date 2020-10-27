@@ -66,7 +66,7 @@ func TestServices(t *testing.T) {
 	})
 
 	t.Run("Create Service", func(t *testing.T) {
-		servicePayload := "eyJhbGdvcml0aG0iOiJQUzI1NiIsImFsZyI6IlBTMjU2In0.eyJmdW5jdGlvbiI6ImNyZWF0ZVNlcnZpY2VJZGVudGl0eSIsInBhcmFtcyI6eyJkaWQiOiJ2dG46dHJ1c3RvczpzZXJ2aWNlOjEiLCJuYW1lIjoiY2hhaW5jb2RlX2V4YW1wbGUwMiIsImlzUHVibGljIjp0cnVlfX0.ZD09jbF7YbNbCAlvZhQAS3e76ziwqD-2v3Z-A9abVRPGpuqF4KR4YOkb3lyzLeiiZJo240tDPzfFessG93yCxY3KOcREXZ5hAFqhxk25Eyw9Cx_vngj8_ON7bfh7DBc5J05c4K2-QET9PV1MMWBqeS3TjiCq2zBfHxsWBRsTeOA5e32X6xyqAZq6Cj2NXA4kLXSd4zhRu_B5xtG4HobwhOFqLnliSP74tvBM_disK3Yk08qfrsr9o5u5xOofdbcigEUpaZVpFVdT79VFkFHvrX-ACoadeMMCq87sraE3riEAGaqnXPuIZurE50APyUJAWTYbTHOSYlW9bRB21C8smA"
+		servicePayload := "eyJhbGdvcml0aG0iOiJQUzI1NiIsImFsZyI6IlBTMjU2In0.eyJmdW5jdGlvbiI6ImNyZWF0ZVNlcnZpY2VJZGVudGl0eSIsInBhcmFtcyI6eyJkaWQiOiJ2dG46dHJ1c3RvczpzZXJ2aWNlOjEiLCJuYW1lIjoiY2hhaW5jb2RlX2V4YW1wbGUwMiIsImlzUHVibGljIjp0cnVlLCJjaGFubmVsIjoidGVsZWZvbmljYWNoYW5uZWwifX0.Zr-Vqp2hGRTmwzXdKAyzBe8MdiqUjpshwR_gtP931TEgwNYwX8jQdZlP_yEIbthepWUwgcP0wZSoMgsssamVJ-U9yf2Ts2TjMJkUOiehXz2gzkzJ-nKWYuDKhF-IAM1nadkejb3442R5iPetlb8IzpwiJkVuc1TorpcciE38fEO81hhI_iUsdWCWrcNSNMYEecFsEui12VbBJKy3Ab9u6h1q0jhMMxg3qutwNaJzoOD2kE2afQidzQ1vyze5xXlsciqd35xtL3bzVPNIxcjkVNx1L2ST0ugY1N1NQcET3tyfTpO8AtyHRrscPjC0IDyjFthkmcRsdPwun3v5scRtEw"
 		service := Request{Did: "did:vtn:trustos:telefonica:2", Payload: servicePayload}
 		CreateService(t, stub, service)
 	})
@@ -110,7 +110,7 @@ func CreateUnverifiedIdentity(t *testing.T, stub *testcc.MockStub, invokeReq Ide
 	if res.Status != shim.OK {
 		t.Error("Invoke failed", res.Status, res.Message)
 	}
-	expectedRes := ""
+	expectedRes := "The identity has been stored in DLT successfully"
 	assert.Equal(t, expectedRes, string(res.Payload), "Should be the same")
 
 }

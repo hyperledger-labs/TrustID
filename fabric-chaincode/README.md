@@ -1,4 +1,4 @@
-# IDENTITY CHAINCODE (coren-identitycc)
+# TRUSTID CHAINCODE 
 
 A chaincode or smart contract, with all the functionalities allowing developers to create, manage, and export digital assets on the Hyperledger Fabric network
 
@@ -24,7 +24,6 @@ Identity for services is represented with the following structure:
  
 
 
-
 ## Chaincode internal functionalities
 
 ### Init
@@ -32,8 +31,8 @@ Initializes the chaincode with the first controller identity that will be the is
 
 ```js
 {
-		did: "did:vtn:trustos:telefonica:0",
-		controller: "did:vtn:trustos:telefonica:0",
+		did: "did:vtn:trustos:company:0",
+		controller: "did:vtn:trustos:company:0",
 		publicKey: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7NBDzVMESXU/yuARe7YU\nGrkgNMZh5eA5w3PgxgYZf/isDLPHvmSM2Q9cTauDroriGInikQxtZ/CI4+9Qi4Rd\nJCHjeWhzw0hTIXhHoohyo9QTbUVetb4RBDJEcNqFrpztAojn8Ib5EF2soBFtBLyT\nguxlizcWwTZvv+KxHGBg/tUE7JIqw3YzmEK31faR2HhkPPqxTQ9F+h4SOnY9e6Cf\nh75PpjouzarpntSVkAqv/Ot5kV3O4TcWhB0vUr/HZwx2iX+LEyYock8Sx4Op20/g\n7k3J3rYhMGTHfkKMhZjX9QoZ8uBRiSxieAaia0yZSIcycgE6Aqu6KT+WaQn4bCnh\nwQIDAQAB\n-----END PUBLIC KEY-----"
 } 
 
@@ -50,7 +49,7 @@ All invokes are called via the proxy function. The proxy function args are:
 
 ```js
 {
-		did: "did:vtn:trustos:telefonica:0",
+		did: "did:vtn:trustos:company:0",
 		payload: "eyJhbGdvcml0aG0iOiJQUzI1NiIsImFsZyI6IlBTMjU2In0.eyJmdW5jdGlvbiI6ImNyZWF0ZVNlbGZJZGVudGl0eSIsInBhcmFtcyI6eyJkaWQiOiJkaWQ6dnRuOnRydXN0b3M6dGVsZWZvbmljYToyIiwicHVibGljS2V5IjoiLS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS1cbk1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBdTA0ZTlWTE5uMUpIZ1lOSU1SclVcblE0SkhoSG4wd1p4UENEOWtjUHo2M1NNQmlZbkN0Uk0yNHBLODZnQWFUdU00RDhWMkxqckE2ZHZCV3dCT2YydUZcbi80aXJJUlhNT2FJNTh1dFhFQ3NBMHI2Q3cyU3BDWVNWOEJLMXk4aHBuc3cwMi9UMHhZUkRiRnFmaHZxYQ",
 		
 } 
@@ -66,7 +65,7 @@ The payload is signed in jws format. The content of the payload has the followin
 {            
         function: "createSelfIdentity",
         params: {
-                 did: "did:vtn:trustos:telefonica:2",
+                 did: "did:vtn:trustos:company:2",
                  publicKey: publick.toString() 
 
         }		
@@ -90,7 +89,7 @@ The params in the payload has the following form:
 
 ```js
 { 
-    did: "did:vtn:trustos:telefonica:2", 
+    did: "did:vtn:trustos:company:2", 
     publicKey: publick.toString() 
 }
 
@@ -101,7 +100,7 @@ The params in the payload has the following form:
 Gets an identity using the DID.The params to sign in the payload are:
 ```js
 { 
-    did: "did:vtn:trustos:telefonica:2", 
+    did: "did:vtn:trustos:company:2", 
 }
 
 ```
@@ -110,7 +109,7 @@ Gets an identity using the DID.The params to sign in the payload are:
 The controller verifies the identity. The params in the signed payload are
 ```js
 { 
-    did: "did:vtn:trustos:telefonica:2", 
+    did: "did:vtn:trustos:company:2", 
 }
 
 ```
@@ -119,7 +118,7 @@ The controller verifies the identity. The params in the signed payload are
 Revokes an identity. THhe params in the signed payload are:
 ```js
 { 
-    did: "did:vtn:trustos:telefonica:2", 
+    did: "did:vtn:trustos:company:2", 
 }
 
 ```
@@ -127,24 +126,38 @@ Revokes an identity. THhe params in the signed payload are:
 - **`createServiceIdentity()`** <br>
 Creates a service identity. 
 ```js
-{ 
-    did: "vtn:trustos:service:1", 
-    name: "chaincode_example02", 
-    isPublic: true 
+{
+  "serviceID":  "coren-trackscc",
+  "name": "coren-trackscc",
+  "access": {
+  	"policy": "SAME_CONTROLLER"
+  },
+  "channel": "channel1"
 }
 ```
 
 - **`updateServiceAccess()`** <br>
-Update the access for a users DID.
+Update the service access.
 ```js
 { 
     did: "vtn:trustos:service:1",
     access: {
-        did: "did:vtn:trustos:telefonica:1",
-        type: 2
-
-    }, 
-    isPublic: true
+  	    policy: "FINE_GRAINED",
+  	    threshold: 0,
+  	    access: {
+  		"did:vtn:trustid:c0fd6b4749329c4acec7f4ac273d46c2b755736e9f5cae6fc62acec8d04549c6": 2
+      }
+    }
+ 
+}
+```
+- **`updateService()`** <br>
+Update the information from a Service.
+```js
+{ 
+    did: "vtn:trustos:service:1",
+    name: "chaincodeName",
+    channel: "channelName"
 }
 ```
 
@@ -162,7 +175,7 @@ Invokes a chaincode deployed as a service in the vtn platform. Args are the func
 { 
     did: "vtn:trustos:service:1",
      args: ["invoke", "a", "b", "1"], 
-     channel: "telefonicachannel" 
+     channel: "companychannel" 
 }
 ```
 
@@ -183,17 +196,8 @@ Invokes a chaincode deployed as a service in the vtn platform. Args are the func
 
 </details>
 
-## Architecture of the chaincode
-```
-coren-trackscc
-├── src
-    └── chaincode       
-        ├── go files with the logic and tests
-├── postman                   
-    ├── collection.json      // postman collection
-    └── environment.json     // postman environment
-└── README.md       
- ```   
+
+
 
 ## Project configuration
 This project has to be stored in the following route
@@ -230,31 +234,4 @@ You can also run the unit test executing the following commmand:
 go test
 ````
 
-
-
-<!-- ## Run the test and generate report
-
-To run the test used for continuous integration, it is necessary to follow the steps below:
-
-First it is necessary to run the sonar server
-
-```
-cd $GOPATH/src/name_of_the_project/src/chaincode/miscelanea
-docker-compose up -d 
-```
-
-Once the server is up, it is necessary to execute the test and the code coverage
-
-````
-cd $GOPATH/src/coren-trackscc/src/chaincode
-mkdir -p bin
-go test -short -coverprofile=bin/cov.out `go list ./... | grep -v vendor/`
-go tool cover -func=bin/cov.out
-````
-
-The next step is to execute the sonnar scanner
-
-````
-sonar-scanner
-```` -->
 
