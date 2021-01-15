@@ -30,7 +30,7 @@
         "crypto-js": "^4.0.0",
         "fs": "0.0.1-security",
         "jose": "^1.22.1",
-        "mongoose": "^5.9.10",
+        "mongoose": "^5.10.13",
         "node": "^13.12.0",
         "node-jose": "git+https://github.com/cisco/node-jose.git",
         "optional": "^0.1.4",

@@ -8,7 +8,7 @@ SPDX-License-Identifier: Apache-2.0
 package main
 
 import (
-	log "coren-identitycc/src/chaincode/log"
+	log "TrustID/fabric-chaincode/log"
 	"encoding/json"
 	"errors"
 
@@ -22,11 +22,16 @@ func (cc *Chaincode) getIdentity(stub shim.ChaincodeStubInterface, did string, i
 	idReq := make(map[string]interface{})
 	idReq = args.(map[string]interface{})
 
-	log.Infof("[%s][verifyIdentity] Get Identity %v", IDGATEWAY, idReq["did"].(string))
+	if idReq["did"] == nil {
+		log.Errorf("[%s][%s][getIdentity] Problem getting identity: %v", CHANNEL_ENV, IDGATEWAY, "DID input param is undefined")
+		return "", errors.New("DID input param is undefined")
+	}
+
+	log.Infof("[%s][%s][getIdentity] Get Identity %v", CHANNEL_ENV, IDGATEWAY, idReq["did"].(string))
 	if idReq["did"].(string) != did {
 		idReturn, err = cc.getIDRegistry(stub, idReq["did"].(string))
 		if err != nil {
-			log.Errorf("[%s][getIdentity] Problem getting identity: %v", IDGATEWAY, err.Error())
+			log.Errorf("[%s][%s][getIdentity] Problem getting identity: %v", CHANNEL_ENV, IDGATEWAY, err.Error())
 			return "nil", err
 
 		}
@@ -38,7 +43,7 @@ func (cc *Chaincode) getIdentity(stub shim.ChaincodeStubInterface, did string, i
 	identityReponse["did"] = idReq["did"].(string)
 	identityReponse["publicKey"] = idReturn.PublicKey
 
-	log.Infof("[%s][getIdentity] Get Identity", IDGATEWAY)
+	log.Infof("[%s][%s][getIdentity] Get Identity", CHANNEL_ENV, IDGATEWAY)
 
 	idBytes, err := json.Marshal(identityReponse)
 
@@ -49,12 +54,17 @@ func (cc *Chaincode) createIdentity(stub shim.ChaincodeStubInterface, controller
 	idReq := make(map[string]interface{})
 	idReq = args.(map[string]interface{})
 
-	log.Debugf("[%s][createIdentity] Calling to registry", IDGATEWAY)
+	log.Debugf("[%s][%s][createIdentity] Calling to registry", CHANNEL_ENV, IDGATEWAY)
+
+	if idReq["did"] == nil {
+		log.Errorf("[%s][%s][createIdentity] rror creating Identity: %v", CHANNEL_ENV, IDGATEWAY, "DID input param is undefined")
+		return "", errors.New("DID input param is undefined")
+	}
 
 	identityStore := Identity{PublicKey: idReq["publicKey"].(string), Controller: controller}
 	_, err := cc.createIDRegistry(stub, idReq["did"].(string), identityStore)
 	if err != nil {
-		log.Errorf("[%s][createIdentity] Error creating Identity: %v", IDGATEWAY, err.Error())
+		log.Errorf("[%s][%s][createIdentity] Error creating Identity: %v", CHANNEL_ENV, IDGATEWAY, err.Error())
 		return "", err
 	}
 
@@ -65,57 +75,72 @@ func (cc *Chaincode) createIdentity(stub shim.ChaincodeStubInterface, controller
 func (cc *Chaincode) createSelfIdentity(stub shim.ChaincodeStubInterface, args interface{}) (string, error) {
 	idReq := make(map[string]interface{})
 	idReq = args.(map[string]interface{})
-	log.Debugf("[%s][createSelfIdentity] Calling to registry", IDGATEWAY)
+	log.Debugf("[%s][%s][createSelfIdentity] Calling to registry", CHANNEL_ENV, IDGATEWAY)
 	identityStore := Identity{PublicKey: idReq["publicKey"].(string)}
+
+	if idReq["did"] == nil {
+		log.Errorf("[%s][%s][createSelfIdentity] Error creating Identity: %v", CHANNEL_ENV, IDGATEWAY, "DID input param is undefined")
+		return "", errors.New("DID input param is undefined")
+	}
 
 	_, err := cc.createIDRegistry(stub, idReq["did"].(string), identityStore)
 	if err != nil {
-		log.Errorf("[%s][createSelfIdentity] Error creating Identity: %v", IDGATEWAY, err.Error())
+		log.Errorf("[%s][%s][createSelfIdentity] Error creating Identity: %v", CHANNEL_ENV, IDGATEWAY, err.Error())
 		return "", err
 	}
 
-	return "", nil
+	return "The identity has been stored in DLT successfully", nil
 }
 func (cc *Chaincode) verifyIdentity(stub shim.ChaincodeStubInterface, did string, identity *Identity, args interface{}) (string, error) {
-	log.Infof("[%s][verifyIdentity]Verifying identity", IDGATEWAY)
-	idVerReq := make(map[string]interface{})
-	idVerReq = args.(map[string]interface{})
+	log.Infof("[%s][%s][verifyIdentity]Verifying identity", CHANNEL_ENV, IDGATEWAY)
+	idReq := make(map[string]interface{})
+	idReq = args.(map[string]interface{})
 
-	log.Infof("[%s][verifyIdentity] Idenitity has access %v", IDGATEWAY, identity.Access)
+	log.Infof("[%s][%s][verifyIdentity] Idenitity has access %v", CHANNEL_ENV, IDGATEWAY, identity.Access)
 
 	if identity.Access != 4 {
-		log.Errorf("[%s][verifyIdentity] Identity has not access to verify", IDGATEWAY)
-		return "", errors.New("Verification unauthorized, the did provided has not access")
+		log.Errorf("[%s][%s][verifyIdentity] Error verification unauthorized, the did provided has not access", CHANNEL_ENV, IDGATEWAY)
+		return "", errors.New(ERRORVerID)
 	}
 
-	_, err := cc.updateIDRegistry(stub, idVerReq["did"].(string), did, 1)
-	if err != nil {
-		log.Errorf("[%s][verifyIdentity] Error verifying signature: %v", IDGATEWAY, err.Error())
-		return "", err
+	if idReq["did"] == nil {
+		log.Errorf("[%s][%s][verifyIdentity] Error verifying signature: %v", CHANNEL_ENV, IDGATEWAY, "DID input param is undefined")
+		return "", errors.New("DID input param is undefined")
 	}
-	log.Infof("[%s][verifyIdentity]Idenitity updated", IDGATEWAY)
+
+	_, err := cc.updateIDRegistry(stub, idReq["did"].(string), did, 1)
+	if err != nil {
+		log.Errorf("[%s][%s][verifyIdentity] Error verifying signature: %v", CHANNEL_ENV, IDGATEWAY, err.Error())
+		return "", errors.New(ERRORVerSign)
+	}
+	log.Infof("[%s][%s][verifyIdentity]Idenitity updated", CHANNEL_ENV, IDGATEWAY)
 
 	return "The Identity has been verified", nil
 
 }
 
 func (cc *Chaincode) revokeIdentity(stub shim.ChaincodeStubInterface, did string, identity *Identity, args interface{}) (string, error) {
-	log.Infof("[%s][revokeIdentity]Verifying identity", IDGATEWAY)
+	log.Infof("[%s][%s][revokeIdentity]Verifying identity", CHANNEL_ENV, IDGATEWAY)
 	var err error
 	idReq := make(map[string]interface{})
 	idReq = args.(map[string]interface{})
 
 	if identity.Access != 4 {
-		log.Errorf("[%s][revokeIdentity] Identity has not access to revoke", IDGATEWAY)
-		return "", errors.New("Identity has not access to revoke")
+		log.Errorf("[%s][%s][revokeIdentity]Error revocation unauthorized, the did provided has not access", CHANNEL_ENV, IDGATEWAY)
+		return "", errors.New(ERRORRevID)
+	}
+
+	if idReq["did"] == nil {
+		log.Errorf("[%s][%s][revokeIdentity] Error revoking signature: %v", CHANNEL_ENV, IDGATEWAY, "DID input param is undefined")
+		return "", errors.New("DID input param is undefined")
 	}
 
 	_, err = cc.revokeIDRegistry(stub, idReq["did"].(string), did)
 	if err != nil {
-		log.Errorf("[%s][revokeIdentity] Error revoking signature: %v", IDGATEWAY, err.Error())
-		return "", err
+		log.Errorf("[%s][%s][revokeIdentity] Error revoking signature: %v", CHANNEL_ENV, IDGATEWAY, err.Error())
+		return "", errors.New(ERRORRevSign)
 	}
-	log.Infof("[%s][revokeIdentity]Idenitity revoked", IDGATEWAY)
+	log.Infof("[%s][%s][revokeIdentity]Idenitity revoked", CHANNEL_ENV, IDGATEWAY)
 
 	return "Identity revoked successfully", nil
 
