@@ -128,7 +128,8 @@ networks.
     * `getIdentity(did: DID, id: string): * Promise<object>`: Gets a registered identity from TrustID.
     * `revokeIdentity(adminDID: DID, id: string): Promise<object>`: Revokes a registered identity. Only supported by the owner or controller of the DID.
     * `createService(did: DID, serviceDID: string, name: string, access: AccessPolicy, channel: string): Promise<object>`: Creates a new service in the TrustID network.
-    * `updateService(did: DID, serviceDID: string, access: Access, isPublic: boolean): Promise<object>`: Updates the information from a service.
+    * `updateService(did: DID, serviceDID: string, name: string, channel: string): Promise<object>`: Updates the information from a service.
+    * `updateServiceAccess(did: DID, serviceDID: string, access: Access, isPublic: boolean): Promise<object>`: Updates the access from a service.
     * `getService(did: DID, serviceDID: string): Promise<object>`: Gets information from a registered service.
     * `invoke (did: DID, serviceDID: string, args: string[], channel: string): Promise<object>`: Invokes a function of a registered service in the TrustID network.
     * `query(did: DID, serviceDID: string, args: string[], channel: string): Promise<object>`: Queries a function of a registered service in the TrustID network

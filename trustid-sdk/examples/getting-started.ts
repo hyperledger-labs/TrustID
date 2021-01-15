@@ -1,3 +1,4 @@
+import { exit } from "process";
 
 // Load SDK library.
 const sdk = require("../dist/index.js");
@@ -11,10 +12,10 @@ console.log(wal)
 const ks = new sdk.FileKeystore("file", "./keystore");
 wal.setKeystore(ks)
 
-const ccp = JSON.parse(fs.readFileSync("./ccp-cloud.json", 'utf8'));
+const ccp = JSON.parse(fs.readFileSync("../connection-profile.json", 'utf8'));
 const config = {
     stateStore: '/tmp/statestore',
-    caURL: 'https://telefonicaca:7054',
+    caURL: 'https://ca.org1.telefonica.com:7054',
     caName: 'telefonicaca',
     caAdmin: 'adminCA',
     caPassword: 'adminpw',
@@ -26,7 +27,7 @@ const config = {
     walletID: 'admin',
     asLocalhost: false,
     ccp: ccp,
-    chaincodeName: "trustidcc",
+    chaincodeName: "identitycc",
     fcn: "proxy",
     channel: "channel1"
 }
@@ -60,15 +61,15 @@ async function createDID(){
 async function serviceInteraction(){
     const did = await wal.getDID("default")
     // Get service
-    let res = await wal.networks.hf.getService(did, "coren-trackscc-v2")
+    let res = await wal.networks.hf.getService(did, "coren-trackscc")
     console.log("[*] Service info:\n", res)
     // Create an asset in the service
     const asset = {assetId: "test"+Date.now(), data:{"a":1, "b":2}, metadata: {"c": 4}}
     const assetStr = JSON.stringify(asset)
-    res = await wal.networks.hf.invoke(did, "coren-trackscc-v2",["createAsset", assetStr], "channel1")
+    res = await wal.networks.hf.invoke(did, "coren-trackscc",["createAsset", assetStr], "channel1")
     console.log("[*] Asset creation:\n", res)
     // Get the created asset.
-    res = await wal.networks.hf.invoke(did, "coren-trackscc-v2",["getAsset", JSON.stringify({assetId: asset.assetId})], "channel1")
+    res = await wal.networks.hf.invoke(did, "coren-trackscc",["getAsset", JSON.stringify({assetId: asset.assetId})], "channel1")
     console.log("[*] Asset registered\n", res)
 }
 
@@ -81,9 +82,9 @@ async function walletInteraction(){
     console.log("[*] DID signature\n", sign)
     let verify = await did.verify(sign, did)
     console.log("[*] Signature verification\n", verify)
-    const did2 = await wal.generateDID("RSA", "test", "test")
-    verify = await did.verify(sign, did2)
-    console.log("[*] Signature wrong verification\n", verify)
+    // const did2 = await wal.generateDID("RSA", "test", "test")
+    // verify = await did.verify(sign, did2)
+    // console.log("[*] Signature wrong verification\n", verify)
 }
 
 // Main async function.
@@ -91,8 +92,9 @@ async function main() {
     await configureNetwork()
     await createDID()
     await serviceInteraction()
-    await walletInteraction()
+    // await walletInteraction()
+    exit(1);
 }
 
-main().then(console.log).catch(console.log)
+main().then(() =>{} ).catch(console.log)
 // tsc getting-started.ts && node getting-started.js
