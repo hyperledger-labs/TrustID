@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 */
 import { Keystore } from './keystore';
-import { DID } from '../wallet'
+import { DID } from '../core/did'
 
 import fs from 'fs';
 
@@ -69,7 +69,6 @@ export class FileKeystore extends Keystore {
                     auxKs[k] = emptyDID;
                 }
                 this.keystore = auxKs;
-                // this.keystore = JSON.parse(fs.readFileSync(dir, 'utf8'))
                 break;
             }
             case "localStorage": {
@@ -114,7 +113,13 @@ export class FileKeystore extends Keystore {
     }
    // TO DO
     public async updateDID(did: DID): Promise<boolean> {
-       
+        try{
+            this.keystore[did.id] = did;
+            this.saveKeystore();
+        } catch {
+            throw false;
+        }
+
         return true
     }
 

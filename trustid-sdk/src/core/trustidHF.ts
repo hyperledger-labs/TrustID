@@ -5,9 +5,9 @@ Copyright 2020 Telefónica Digital España. All Rights Reserved.
 SPDX-License-Identifier: Apache-2.0
 
 */
-import {TrustID, AccessPolicy} from "./trustInterface";
-import {HfDriver, HfConfig} from "./hfdriver";
-import {DID} from "../wallet";
+import {TrustID, AccessPolicy} from "./trustid";
+import {HfDriver} from "../drivers/hfdriver";
+import {DID} from "./did";
 
 export interface Config {
 	fcn: string;
@@ -90,6 +90,45 @@ export class TrustIdHf extends TrustID {
 		);
 		return res;
 	}
+
+		/** createIdentity registers a new unverified identity */
+		public async importIdentity(did: DID): Promise<any> {
+			const args = [
+				JSON.stringify({
+					did: did.id,
+					payload: await did.sign({
+						function: "createSelfIdentity",
+						params: {
+							did: did.id,
+							publicKey: did.pubkey,
+						},
+					}),
+				}),
+			];
+			let res: any = await this.driver.callContractTransaction(
+				this.config.chaincodeName,
+				this.config.fcn,
+				args,
+				this.config.channel
+			);
+			return res;
+		}
+
+		/** createIdentity registers a new unverified identity */
+		public async importSignedIdentity(publicKey: string, payload: string): Promise<any> {
+			const args = [ JSON.stringify({
+				publicKey: publicKey,
+				payload: payload
+				}),
+			];
+			let res: any = await this.driver.callContractTransaction(
+				this.config.chaincodeName,
+				this.config.fcn,
+				args,
+				this.config.channel
+			);
+			return res;
+		}
 	/** VerifyIdentity allow admins to verify user identityes */
 	public async verifyIdentity(adminDID: DID, id: string): Promise<any> {
 		const args = [
@@ -187,6 +226,33 @@ export class TrustIdHf extends TrustID {
 	public async updateService(
 		did: DID,
 		serviceDID: string,
+		name: string,
+		channel: string
+	): Promise<any> {
+		const args = [
+			JSON.stringify({
+				did: did.id,
+				payload: await did.sign({
+					function: "updateService",
+					params: {
+						did: serviceDID,
+						name: name,
+						channel: channel,
+					},
+				}),
+			}),
+		];
+		let res: any = await this.driver.callContractTransaction(
+			this.config.chaincodeName,
+			this.config.fcn,
+			args,
+			this.config.channel
+		);
+		return res;
+	}
+	public async updateServiceAccess(
+		did: DID,
+		serviceDID: string,
 		access: AccessPolicy
 	): Promise<any> {
 		const args = [
@@ -258,6 +324,21 @@ export class TrustIdHf extends TrustID {
 		return res;
 	}
 
+	public async invokeSigned(did: string, payload: string): Promise<any> {
+		const argsCall = [ JSON.stringify({
+			did: did,
+			payload: payload
+		}),
+		];
+			let res: any = await this.driver.callContractTransaction(
+			this.config.chaincodeName,
+			this.config.fcn,
+			argsCall,
+			this.config.channel
+		);
+		return res;
+	}
+
 	/** Invokes a chaincode through the proxy */
 	public async query(did: DID, serviceDID: string, args: string[], channel: string): Promise<any> {
 		const argsCall = [
@@ -275,6 +356,21 @@ export class TrustIdHf extends TrustID {
 		];
 
 		let res: any = await this.driver.getContractTransaction(
+			this.config.chaincodeName,
+			this.config.fcn,
+			argsCall,
+			this.config.channel
+		);
+		return res;
+	}
+
+	public async querySigned(did: string, payload: string): Promise<any> {
+		const argsCall = [ JSON.stringify({
+			did: did,
+			payload: payload
+		}),
+		];
+			let res: any = await this.driver.getContractTransaction(
 			this.config.chaincodeName,
 			this.config.fcn,
 			argsCall,

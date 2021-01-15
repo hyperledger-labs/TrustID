@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 
 */
 import { Keystore } from './keystore';
-import { DID } from '../wallet'
+import { DID } from '../core/did'
 
 export class LocalStorageKeystore extends Keystore {
 

@@ -7,7 +7,7 @@ SPDX-License-Identifier: Apache-2.0
 */
 import {expect} from "chai";
 import {Wallet} from "../../src/wallet";
-import {LocalStorageKeystore} from "../../src/keystore/localStorageKeystore";
+import {LocalStorageKeystore} from "../../src/keystores/localStorageKeystore";
 
 import "mocha";
 
