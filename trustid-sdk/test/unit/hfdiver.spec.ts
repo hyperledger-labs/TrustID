@@ -5,7 +5,7 @@ Copyright 2020 Telefónica Digital España. All Rights Reserved.
 SPDX-License-Identifier: Apache-2.0
 
 */
-import { HfDriver } from "../../src/network/hfdriver";
+import { HfDriver } from "../../src/drivers/hfdriver";
 
 
 /* global describe, it, before, after */

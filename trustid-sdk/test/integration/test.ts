@@ -6,13 +6,13 @@ SPDX-License-Identifier: Apache-2.0
 
 */
 import {Wallet} from "../../src/wallet";
-import {AccessPolicy, PolicyType} from "../../src/network/trustInterface";
+import {AccessPolicy, PolicyType} from "../../src/core/trustid";
 import {expect} from "chai";
 
-import {TrustIdHf} from "../../src/network/trustHF";
+import {TrustIdHf} from "../../src/core/trustidHF";
 const path = require("path");
 const fs = require("fs");
-const ccpPath = path.resolve(__dirname, "..", "..", "..", "ccp-dev-dsn.json");
+const ccpPath = path.resolve(__dirname, "..", "..", "..", "config", "connection-profile.json");
 
 const adminPriv = `-----BEGIN PRIVATE KEY-----
 MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC7Th71Us2fUkeB
@@ -92,7 +92,7 @@ describe("Integration test", async() => {
 			await trustID.getIdentity(await wal.getDID("default"), await didUnlock.id);
 			const id = Date.now();
 			const res = await trustID.createService(await wal.getDID("default"), `vtn:trustos:service:${id}`, "sacc", access,config.channel);
-			await trustID.updateService(await wal.getDID("default"), `vtn:trustos:service:${id}`, access);
+			await trustID.updateServiceAccess(await wal.getDID("default"), `vtn:trustos:service:${id}`, access);
 			const result = await trustID.invoke(
 				await wal.getDID("default"),
 				`vtn:trustos:service:${id}`,

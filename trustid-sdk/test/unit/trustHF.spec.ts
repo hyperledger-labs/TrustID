@@ -5,11 +5,11 @@ Copyright 2020 Telefónica Digital España. All Rights Reserved.
 SPDX-License-Identifier: Apache-2.0
 
 */
-import {HfDriver} from "../../src/network/hfdriver";
-import {TrustIdHf} from "../../src/network/trustHF";
-import {DID} from "../../src/wallet";
+import {HfDriver} from "../../src/drivers/hfdriver";
+import {TrustIdHf} from "../../src/core/trustidHF";
+import {DID} from "../../src/core/did";
 import {Wallet} from "../../src/wallet";
-import { AccessPolicy, PolicyType} from "../../src/network/trustInterface";
+import { AccessPolicy, PolicyType} from "../../src/core/trustid";
 
 /* global describe, it, before, after */
 const {expect} = require("chai");
@@ -258,10 +258,78 @@ describe("TrustHF - Test", async() => {
 				console.log(err);
 			}
 		});
+
+		
+		
 		it("Get identity Fail", async () => {
 			try {
 				const trustID = new TrustIdHf(config);
 				const result = await trustID.getIdentity(identity, "id");
+			} catch (err) {
+				expect(err.message).to.equal("Error calling contract");
+			}
+		});
+	});
+	describe("Import Signed Identity ", () => {
+		let driverStub: any;
+		before((done) => {
+			driverStub = sinon.stub(HfDriver.prototype, "callContractTransaction").resolves("result");
+			driverStub.onSecondCall().rejects(new Error("Error calling contract"));
+			done();
+		});
+
+		after((done) => {
+			driverStub.restore();
+			done();
+		});
+   
+		it("Import Signed Success", async () => {
+			try {
+			  
+				const trustID = new TrustIdHf(config);
+				const result = await trustID.importSignedIdentity("did", "payload");
+				expect(result).to.equal("result");
+			} catch (err) {
+				console.log(err);
+			}
+		});
+		it("Import signed Fail", async () => {
+			try {
+				const trustID = new TrustIdHf(config);
+				await trustID.importSignedIdentity("id", "payload");
+			} catch (err) {
+				expect(err.message).to.equal("Error calling contract");
+			}
+		});
+	});
+
+	describe("Import  Identity ", () => {
+		let driverStub: any;
+		before((done) => {
+			driverStub = sinon.stub(HfDriver.prototype, "callContractTransaction").resolves("result");
+			driverStub.onSecondCall().rejects(new Error("Error calling contract"));
+			done();
+		});
+
+		after((done) => {
+			driverStub.restore();
+			done();
+		});
+   
+		it("Import  Success", async () => {
+			try {
+			  
+				const trustID = new TrustIdHf(config);
+				const result = await trustID.importIdentity(identity);
+				expect(result).to.equal("result");
+			} catch (err) {
+				console.log(err);
+			}
+		});
+		it("Import Fail", async () => {
+			try {
+				const trustID = new TrustIdHf(config);
+				await trustID.importIdentity(identity);
 			} catch (err) {
 				expect(err.message).to.equal("Error calling contract");
 			}
@@ -320,7 +388,7 @@ describe("TrustHF - Test", async() => {
 			try {
               
 				const trustID = new TrustIdHf(config);
-				const result = await trustID.updateService(identity, "id", access);
+				const result = await trustID.updateServiceAccess(identity, "id", access);
 				expect(result).to.equal("OK");
 			} catch (err) {
 				console.log(err);
@@ -329,7 +397,7 @@ describe("TrustHF - Test", async() => {
 		it("Update Service Fail", async () => {
 			try {
                 const trustID = new TrustIdHf(config);
-				await trustID.updateService(identity, "id", access);
+				await trustID.updateServiceAccess(identity, "id", access);
 			} catch (err) {
 				expect(err.message).to.equal("Error calling contract");
 			}
@@ -434,4 +502,69 @@ describe("TrustHF - Test", async() => {
 			}
 		});
 	});
+	describe("Invoke Signed Service ", () => {
+		let driverStub: any;
+		before((done) => {
+			driverStub = sinon.stub(HfDriver.prototype, "callContractTransaction").resolves("result");
+			driverStub.onSecondCall().rejects(new Error("Error calling contract"));
+			done();
+		});
+
+		after((done) => {
+			driverStub.restore();
+			done();
+        });
+   
+		it("Invoke Success", async () => {
+			try {
+              
+				const trustID = new TrustIdHf(config);
+				const result = await trustID.invokeSigned("did", "payload");
+				expect(result).to.equal("result");
+			} catch (err) {
+				console.log(err);
+			}
+		});
+		it("Invoke Fail", async () => {
+			try {
+                const trustID = new TrustIdHf(config);
+                await trustID.invokeSigned("id", "payload");
+			} catch (err) {
+				expect(err.message).to.equal("Error calling contract");
+			}
+		});
+	});
+	
+	describe("Query Signed Service ", () => {
+		let driverStub: any;
+		before((done) => {
+			driverStub = sinon.stub(HfDriver.prototype, "getContractTransaction").resolves("result");
+			driverStub.onSecondCall().rejects(new Error("Error calling contract"));
+			done();
+		});
+
+		after((done) => {
+			driverStub.restore();
+			done();
+        });
+   
+		it("Query Success", async () => {
+			try {
+              
+				const trustID = new TrustIdHf(config);
+				const result = await trustID.querySigned("did", "payload");
+				expect(result).to.equal("result");
+			} catch (err) {
+				console.log(err);
+			}
+		});
+		it("Query Fail", async () => {
+			try {
+                const trustID = new TrustIdHf(config);
+                await trustID.querySigned("id", "payload");
+			} catch (err) {
+				expect(err.message).to.equal("Error calling contract");
+			}
+		});
+    });
  });
