@@ -173,6 +173,35 @@ describe('Wallet tests', () => {
 
     });
 
+  
+        it('Create did SSS', async() => {
+            try {
+                const obj = await wal.generateDIDwithSSS('EC', 'default', 3, 1);
+                expect(obj.secrets.length).to.equal(3);
+                } catch(err) {
+                   // expect(err).to.be.an('error');
+                }
+        })
 
+        it('Unlock did SSS', async() => {
+            try {
+                const obj = await wal.generateDIDwithSSS('EC', 'default', 3, 1);
+                const array = [obj.secrets[0], obj.secrets[1]]
+                obj.did.unlockAccountSSS(array)
+                } catch(err) {
+                    console.log(err)
+                   // expect(err).to.be.an('error');
+                }
+        })
+        it('Unlock did SSS', async() => {
+            try {
+                const obj = await wal.generateDIDwithSSS('EC', 'default', 3, 3);
+                const array = [obj.secrets[0], obj.secrets[1]]
+                obj.did.unlockAccountSSS(array)
+                } catch(err) {
+                    expect(err).to.be.an('error');
+                }
+        })
+    
 });
 
