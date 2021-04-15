@@ -26,15 +26,16 @@
     "dependencies": {
         "@types/mongoose": "^5.7.14",
         "@types/node": "^13.7.1",
-        "axios": "^0.19.2",
         "crypto-js": "^4.0.0",
+        "fabric-ca-client": "2.2.5",
+        "fabric-network": "v2.2.5",
         "fs": "0.0.1-security",
         "jose": "^1.22.1",
         "mongoose": "^5.10.13",
-        "node": "^13.12.0",
         "node-jose": "git+https://github.com/cisco/node-jose.git",
         "optional": "^0.1.4",
-        "path": "^0.12.7"
+        "path": "^0.12.7",
+        "shamirs-secret-sharing": "1.0.1"
     },
     "devDependencies": {
         "@types/chai": "^4.2.11",
@@ -51,8 +52,5 @@
         "typescript": "^3.8.3",
         "typescript-coverage-report": "^0.1.3"
     },
-    "optionalDependencies": {
-        "fabric-ca-client": "2.1.0",
-        "fabric-network": "v2.1.0"
-    }
+    "optionalDependencies": {}
 }

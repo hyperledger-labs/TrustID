@@ -78,7 +78,6 @@ export class MongoKeystore extends Keystore {
         try {
             // Store DID in Mongo. Modify if it exists, create if it doesn't
             const didObj = await DIDModel.findOne({ id: did.id });
-            console.log(didObj)
             if(!didObj){
                 await DIDModel.create(did);
                 return true;
@@ -97,10 +96,9 @@ export class MongoKeystore extends Keystore {
     public async updateDID(did: DID): Promise<boolean> {
         try {
             // Store DID in Mongo. Modify if it exists, create if it doesn't
-            console.log(did.tempPrivKey)
             const didObj = await DIDModel.updateOne(
                 {id: did.id },
-                {tempPrivKey: did.tempPrivKey },
+               did,
                 );
                 this.keystore[did.id] = did // update in memory keystore
                 return true;
