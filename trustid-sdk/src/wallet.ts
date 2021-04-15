@@ -54,11 +54,32 @@ export class Wallet {
 	}
 
 	/** generateDID generates a new DID in the wallet */
+	/** generateDID generates a new DID in the wallet */
 	public async generateDID(type: string, controller: string = "default", passphrase: string = ""): Promise<DID> {
 		const value: DID = new DID(type, controller);
 		await value.createKey(passphrase);
 		await this.keystore.storeDID(value);
 		return value;
+	}
+
+	/** generateDID generates a new DID in the wallet */
+	public async generateDIDwithSSS(type: string, controller: string = "default", shares: number = 3, threshold: number = 1): Promise<any> {
+		const value: DID = new DID(type, controller);
+		const secrets = await value.createKeySSS(shares, threshold);
+		await this.keystore.storeDID(value);
+		const did = {
+			did: value,
+			secrets: secrets
+		}
+		return did;
+	}
+
+		/** Recovers the keyt */
+	public async recoverKeySSS(id: string, secrets: Buffer[], newPassword: string): Promise<void>{
+			const did = await this.getDID(id)
+			const recoveredDID = await did.recoverKey(secrets, newPassword);
+			await this.keystore.updateDID(recoveredDID)
+			return;
 	}
 
 	/** updateTempKeyDID updates the temp key for a DID */
@@ -67,6 +88,14 @@ export class Wallet {
 		const unlockedDID = await did.unlockAccount(passphrase, tempPassphrase)
 		await this.keystore.updateDID(unlockedDID)
 	}
+
+	public async updatePassword(id: string, oldPassphrase: string = "",passphrase: string=""): Promise<void> {
+		const did = await this.keystore.getDID(id);
+		const unlockedDID = await did.updatePassword(oldPassphrase, passphrase);
+		await this.keystore.updateDID(unlockedDID)
+	}
+
+	
 	/** Set the Keystore to use in the wallet. */
 	public addNetwork(id: string, network: TrustID): void {
 		this.networks[id] = network;
