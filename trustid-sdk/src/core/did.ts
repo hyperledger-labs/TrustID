@@ -175,7 +175,6 @@ export class DID {
 		}
 	}
 	public async generateRecoveryKeyTemp(passwordTemp: string, shares: number = 1, threshold: number = 1): Promise < Buffer[] > {
-
 		try {
 			await this.unlockAccountTemp(passwordTemp);
 			const pk = this.unlockedKey.toPEM(true);
