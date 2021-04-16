@@ -175,7 +175,7 @@ export class DID {
 		}
 	}
 	public async generateRecoveryKeyTemp(passwordTemp: string, shares: number = 1, threshold: number = 1): Promise < Buffer[] > {
-		// Only createKey for DID if not already created.
+
 		try {
 			await this.unlockAccountTemp(passwordTemp);
 			const pk = this.unlockedKey.toPEM(true);
